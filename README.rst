@@ -39,11 +39,21 @@ Usage
   temperature = api.get_target_temperature(domain_objects)
   print(temperature)
 
+  # Get the available presets
+  presets = api.get_presets(domain_objects)
+  print(presets)
+
+  # Get the current active preset
+  current_preset = api.get_current_preset(domain_objects)
+  print(current_preset)
+
+  # Set a preset
+  preset = api.set_preset(domain_objects, 'away')
+  print(preset)
+
 ..
 
 To do:
 """"""
-- Multiple thermostat support
-- Set and get presets
 - Optimize fetching of domain objects
 - Add support for custom port mapping
