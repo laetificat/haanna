@@ -41,6 +41,9 @@ class Haanna(object):
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
         rule_id = self.get_rule_id_by_name(root, 'Thermostat presets')
+        if rule_id is None:
+            print("Could not find rule ID")
+            return
         presets = self.get_preset_dictionary(root, rule_id)
         return presets
 
@@ -125,9 +128,10 @@ class Haanna(object):
 
     def get_rule_id_by_name(self, root, rule_name):
         """Gets the rule ID based on name"""
-        current_rule = root.find("rule")
-        if current_rule.find("name").text == rule_name:
-            return current_rule.attrib['id']
+        rules = root.findall("rule")
+        for rule in rules:
+            if rule.find("name").text == rule_name:
+                return rule.attrib['id']
 
     def get_preset_dictionary(self, root, rule_id):
         """Gets the presets from a rule based on rule ID and returns a dictionary with all the key-value pairs"""
