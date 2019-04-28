@@ -4,6 +4,7 @@ Plugwise Anna HomeAssistant component
 import requests
 import xml.etree.cElementTree as Etree
 import json
+from requests.exceptions import HTTPError
 
 USERNAME = ''
 PASSWORD = ''
@@ -15,10 +16,10 @@ ANNA_LOCATIONS_ENDPOINT = '/core/locations'
 
 class Haanna(object):
 
-    def __init__(self, username, password, host):
+    def __init__(self, username, password, host, port):
         """Constructor for this class"""
         self.set_credentials(username, password)
-        self.set_anna_endpoint('http://' + host)
+        self.set_anna_endpoint('http://' + host + ':' + str(port))
 
     @staticmethod
     def ping_anna_thermostat():
@@ -221,7 +222,6 @@ class Haanna(object):
         """Gets the mode from a (list of) rule id(s)"""
         active=False
         for schema_id in schema_ids:
-            print(schema_id)
             print(root.find("rule[@id='" + schema_id + "']/active").text)
             if root.find("rule[@id='" + schema_id + "']/active").text == 'true':
                 active=True
