@@ -98,7 +98,7 @@ class Haanna(object):
     @staticmethod
     def get_heating_status(root):
         """Gets the active heating status"""
-        if root.find("appliance[type='heater_central']/logs/point_log/period/measurement").text == 'on':
+        if root.find("appliance[type='heater_central']/logs/point_log[type='central_heating_state']/period/measurement").text == 'on':
             return True
         else:
             return False
