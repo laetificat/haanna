@@ -222,7 +222,6 @@ class Haanna(object):
         """Gets the mode from a (list of) rule id(s)"""
         active=False
         for schema_id in schema_ids:
-            print(root.find("rule[@id='" + schema_id + "']/active").text)
             if root.find("rule[@id='" + schema_id + "']/active").text == 'true':
                 active=True
                 break
