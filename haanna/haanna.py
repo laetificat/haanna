@@ -3,6 +3,8 @@ Plugwise Anna HomeAssistant component
 """
 import requests
 import xml.etree.cElementTree as Etree
+import json
+from requests.exceptions import HTTPError
 
 USERNAME = ''
 PASSWORD = ''
@@ -14,10 +16,10 @@ ANNA_LOCATIONS_ENDPOINT = '/core/locations'
 
 class Haanna(object):
 
-    def __init__(self, username, password, host):
+    def __init__(self, username, password, host, port):
         """Constructor for this class"""
         self.set_credentials(username, password)
-        self.set_anna_endpoint('http://' + host)
+        self.set_anna_endpoint('http://' + host + ':' + str(port))
 
     @staticmethod
     def ping_anna_thermostat():
@@ -47,6 +49,16 @@ class Haanna(object):
 
         presets = self.get_preset_dictionary(root, rule_id)
         return presets
+
+    def get_mode(self, root):
+        """Gets the mode the thermostat is in (active schedule true or false)"""
+        rule_id = self.get_rule_id_by_template_tag(root, 'zone_preset_based_on_time_and_presence_with_override')
+
+        if rule_id is None:
+            raise RuleIdNotFoundException("Could not find the rule id.")
+
+        mode = self.get_active_mode(root, rule_id)
+        return mode
 
     @staticmethod
     def set_preset(root, preset):
@@ -83,6 +95,14 @@ class Haanna(object):
             raise CouldNotSetPresetException("Could not set the given preset: " + r.text)
 
         return r.text
+
+    @staticmethod
+    def get_heating_status(root):
+        """Gets the active heating status"""
+        if root.find("appliance[type='heater_central']/logs/point_log[type='central_heating_state']/period/measurement").text == 'on':
+            return True
+        else:
+            return False
 
     @staticmethod
     def get_current_preset(root):
@@ -179,6 +199,16 @@ class Haanna(object):
                 return rule.attrib['id']
 
     @staticmethod
+    def get_rule_id_by_template_tag(root, rule_name):
+        """Gets the rule ID based on template_tag"""
+        schema_ids = []
+        rules = root.findall("rule")
+        for rule in rules:
+            if rule.find("template").attrib['tag'] == rule_name:
+                schema_ids.append(rule.attrib['id'])
+        return schema_ids
+
+    @staticmethod
     def get_preset_dictionary(root, rule_id):
         """Gets the presets from a rule based on rule ID and returns a dictionary with all the key-value pairs"""
         preset_dictionary = {}
@@ -186,6 +216,17 @@ class Haanna(object):
         for directive in directives:
             preset_dictionary[directive.attrib['preset']] = float(directive.find("then").attrib['setpoint'])
         return preset_dictionary
+
+    @staticmethod
+    def get_active_mode(root, schema_ids):
+        """Gets the mode from a (list of) rule id(s)"""
+        active=False
+        for schema_id in schema_ids:
+            print(root.find("rule[@id='" + schema_id + "']/active").text)
+            if root.find("rule[@id='" + schema_id + "']/active").text == 'true':
+                active=True
+                break
+        return active
 
 
 class AnnaException(Exception):

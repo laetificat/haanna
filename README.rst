@@ -51,9 +51,19 @@ Usage
   preset = api.set_preset(domain_objects, 'away')
   print(preset)
 
+  # Get operation mode (true = active schedule - false = no active schedules)
+  # it 'walks' all schedules and sends true if one is active
+  mode = api.get_mode(domain_objects)
+  print(mode)
+
+  # Get heating status (true = heating is on, flame on display)
+  heating = api.get_heating_status(domain_objects)
+  print(heating)
+
 ..
 
 To do:
 """"""
 - Optimize fetching of domain objects
 - Add support for custom port mapping
+- Add support for setting operation mode (i.e. schedule on/off)
