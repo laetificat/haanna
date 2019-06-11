@@ -12,6 +12,8 @@ ANNA_ENDPOINT = ''
 ANNA_PING_ENDPOINT = '/ping'
 ANNA_DOMAIN_OBJECTS_ENDPOINT = '/core/domain_objects'
 ANNA_LOCATIONS_ENDPOINT = '/core/locations'
+ANNA_APPLIANCES = '/core/appliances'
+ANNA_RULES = '/core/rules'
 
 
 class Haanna(object):
@@ -40,75 +42,120 @@ class Haanna(object):
 
         return Etree.fromstring(r.text)
 
+    def __is_legacy_anna(self,root):
+        """Detect Anna legacy version based on different domain_objects structure """
+        return root.find("appliance[type='thermostat']/location") is None
+
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
-        rule_id = self.get_rule_id_by_name(root, 'Thermostat presets')
+        if self.__is_legacy_anna(root):
+            return self.__get_preset_dictionary_v1(root)
+        else:      
+            rule_id = self.get_rule_id_by_name(root, 'Thermostat presets')
 
-        if rule_id is None:
-            raise RuleIdNotFoundException("Could not find the rule id.")
+            if rule_id is None:
+                raise RuleIdNotFoundException("Could not find the rule id.")
 
-        presets = self.get_preset_dictionary(root, rule_id)
-        return presets
+            presets = self.get_preset_dictionary(root, rule_id)
+            return presets
 
     def get_mode(self, root):
         """Gets the mode the thermostat is in (active schedule true or false)"""
-        rule_id = self.get_rule_id_by_template_tag(root, 'zone_preset_based_on_time_and_presence_with_override')
-
-        if rule_id is None:
-            raise RuleIdNotFoundException("Could not find the rule id.")
-
-        mode = self.get_active_mode(root, rule_id)
-        return mode
-
-    @staticmethod
-    def set_preset(root, preset):
-        """Sets the given preset on the thermostat"""
-        location_id = root.find("appliance[type='thermostat']/location").attrib['id']
-
-        locations_root = Etree.fromstring(
-            requests.get(
-                ANNA_ENDPOINT + ANNA_LOCATIONS_ENDPOINT,
-                auth=(USERNAME, PASSWORD),
-                timeout=10
-            ).text
-        )
-
-        current_location = locations_root.find("location[@id='" + location_id + "']")
-        location_name = current_location.find("name").text
-        location_type = current_location.find("type").text
-
-        r = requests.put(
-            ANNA_ENDPOINT + ANNA_LOCATIONS_ENDPOINT + ';id=' + location_id,
-            auth=(USERNAME, PASSWORD),
-            data='<locations>' +
-                 '<location id="' + location_id + '">' +
-                 '<name>' + location_name + '</name>' +
-                 '<type>' + location_type + '</type>' +
-                 '<preset>' + preset + '</preset>' +
-                 '</location>' +
-                 '</locations>',
-            headers={'Content-Type': 'text/xml'},
-            timeout=10
-        )
-
-        if r.status_code != requests.codes.ok:
-            raise CouldNotSetPresetException("Could not set the given preset: " + r.text)
-
-        return r.text
-
-    @staticmethod
-    def get_heating_status(root):
-        """Gets the active heating status"""
-        if root.find("appliance[type='heater_central']/logs/point_log[type='central_heating_state']/period/measurement").text == 'on':
-            return True
+        if self.__is_legacy_anna(root):
+            return root.find("module/services/schedule_state/measurement").text =='on'
         else:
-            return False
+            rule_id = self.get_rule_id_by_template_tag(root, 'zone_preset_based_on_time_and_presence_with_override')
 
-    @staticmethod
-    def get_current_preset(root):
+            if rule_id is None:
+                raise RuleIdNotFoundException("Could not find the rule id.")
+
+            mode = self.get_active_mode(root, rule_id)
+            return mode
+
+    def set_preset(self,root, preset):
+        """Sets the given preset on the thermostat"""
+        if self.__is_legacy_anna(root):
+            self.__set_preset_v1
+        else:                  
+            location_id = root.find("appliance[type='thermostat']/location").attrib['id']
+
+            locations_root = Etree.fromstring(
+                requests.get(
+                    ANNA_ENDPOINT + ANNA_LOCATIONS_ENDPOINT,
+                    auth=(USERNAME, PASSWORD),
+                    timeout=10
+                ).text
+            )
+
+            current_location = locations_root.find("location[@id='" + location_id + "']")
+            location_name = current_location.find("name").text
+            location_type = current_location.find("type").text
+
+            r = requests.put(
+                ANNA_ENDPOINT + ANNA_LOCATIONS_ENDPOINT + ';id=' + location_id,
+                auth=(USERNAME, PASSWORD),
+                data='<locations>' +
+                    '<location id="' + location_id + '">' +
+                    '<name>' + location_name + '</name>' +
+                    '<type>' + location_type + '</type>' +
+                    '<preset>' + preset + '</preset>' +
+                    '</location>' +
+                    '</locations>',
+                headers={'Content-Type': 'text/xml'},
+                timeout=10
+            )
+
+            if r.status_code != requests.codes.ok:
+                raise CouldNotSetPresetException("Could not set the given preset: " + r.text)
+
+            return r.text
+
+    def __set_preset_v1(self, root, preset):
+        """Sets the given preset on the thermostat for V1"""
+        rule = root.find("rule/directives/when/then[@icon='"+preset+"'].../.../...")
+        if rule is None:
+            raise CouldNotSetPresetException("Could not find preset '" + preset + "'")
+        else:
+            rule_id = rule.attrib['id']
+            r = requests.put(
+                ANNA_ENDPOINT +
+                ANNA_RULES,                
+                auth=(USERNAME, PASSWORD),
+                data='<rules>' +
+                    '<rule id="'+ rule_id+'">' +
+                    '<active>true</active>' +
+                    '</rule>' +
+                    '</rules>',
+                headers={'Content-Type': 'text/xml'},
+                timeout=10
+            )
+            if r.status_code != requests.codes.ok:
+                raise CouldNotSetPresetException("Could not set the given preset: " + r.text)
+            return r.text
+
+
+    def get_heating_status(self, root):
+        """Gets the active heating status"""
+        if self.__is_legacy_anna(root):   
+            return root.find("appliance[type='heater_central']/logs/point_log[type='boiler_state']/period/measurement").text == 'on'
+        else:
+            if root.find("appliance[type='heater_central']/logs/point_log[type='central_heating_state']/period/measurement").text == 'on':
+                return True
+            else:
+                return False
+
+    def get_current_preset(self, root):
         """Gets the current active preset"""
-        location_id = root.find("appliance[type='thermostat']/location").attrib['id']
-        return root.find("location[@id='" + location_id + "']/preset").text
+        if self.__is_legacy_anna(root):
+            active_rule = root.find("rule[active='true']")
+            if active_rule is None:
+                """"No active preset"""
+                return ""
+            else:
+                return active_rule.find("directives/when/then").attrib['icon']
+        else:        
+            location_id = root.find("appliance[type='thermostat']/location").attrib['id']
+            return root.find("location[@id='" + location_id + "']/preset").text
 
     def get_temperature(self, root):
         """Gets the temperature from the thermostat"""
@@ -131,22 +178,28 @@ class Haanna(object):
 
         return float(measurement)
 
-    @staticmethod
-    def set_temperature(root, temperature):
+    def __get_temperature_uri(self,root):
+        """Determine the set_temperature uri for different versions of Anna"""
+        if self.__is_legacy_anna(root):
+            appliance_id = root.find("appliance[type='thermostat']").attrib['id']
+            return ANNA_APPLIANCES + ';id=' + appliance_id + '/thermostat'
+        else:
+            location_id = root.find("appliance[type='thermostat']/location").attrib['id']
+            thermostat_functionality_id = root.find(
+                "location[@id='" + location_id + "']/actuator_functionalities/thermostat_functionality"
+            ).attrib['id']
+        
+            return ANNA_LOCATIONS_ENDPOINT +  ';id=' + location_id + '/thermostat;id=' + thermostat_functionality_id
+                
+    def set_temperature(self, root, temperature):
         """Sends a set request to the temperature with the given temperature"""
-        location_id = root.find("appliance[type='thermostat']/location").attrib['id']
-
-        thermostat_functionality_id = root.find(
-            "location[@id='" + location_id + "']/actuator_functionalities/thermostat_functionality"
-        ).attrib['id']
+        uri = self.__get_temperature_uri(root)
 
         temperature = str(temperature)
 
         r = requests.put(
             ANNA_ENDPOINT +
-            ANNA_LOCATIONS_ENDPOINT +
-            ';id=' + location_id +
-            '/thermostat;id=' + thermostat_functionality_id,
+            uri,                
             auth=(USERNAME, PASSWORD),
             data='<thermostat_functionality><setpoint>' + temperature + '</setpoint></thermostat_functionality>',
             headers={'Content-Type': 'text/xml'},
@@ -215,6 +268,16 @@ class Haanna(object):
         directives = root.find("rule[@id='" + rule_id + "']/directives")
         for directive in directives:
             preset_dictionary[directive.attrib['preset']] = float(directive.find("then").attrib['setpoint'])
+        return preset_dictionary
+
+    @staticmethod
+    def __get_preset_dictionary_v1(root):
+        """Gets the presets and returns a dictionary with all the key-value pairs"""
+        """Example output: {'away': 17.0, 'home': 20.0, 'vacation': 15.0, 'no_frost': 10.0, 'asleep': 15.0}"""
+        preset_dictionary = {}
+        directives = root.findall("rule/directives/when/then")
+        for directive in directives:
+            preset_dictionary[directive.attrib['icon']] = float(directive.attrib['temperature'])
         return preset_dictionary
 
     @staticmethod
