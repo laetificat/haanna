@@ -18,7 +18,7 @@ Usage
   from haanna import haanna
 
   # Create the API
-  api = haanna.Haanna('smile', 'short_id', '192.168.1.60')
+  api = haanna.Haanna('smile', 'short_id', '192.168.1.60', 80)
 
   # Fetch the domain objects
   domain_objects = api.get_domain_objects()
