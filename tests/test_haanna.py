@@ -1,6 +1,7 @@
 import time
 import unittest
 import xml.etree.cElementTree as Et
+import os
 
 from haanna import Haanna
 
@@ -8,7 +9,12 @@ from haanna import Haanna
 class TestHaannaMethods(unittest.TestCase):
 
     def setUp(self):
-        self.haanna = Haanna('smile', 'short_id', 'ip_address')
+        self.haanna = Haanna(
+            os.environ.get('ANNA_USERNAME', 'smile'), 
+            os.environ.get('ANNA_PASSWORD', 'short_id'),
+            os.environ.get('ANNA_IP', 'ip_address'),
+            os.environ.get('ANNA_PORT', 80)
+            )
 
     def test_ping_anna_thermostat(self):
         """Ping the thermostst"""
@@ -90,12 +96,30 @@ class TestHaannaMethods(unittest.TestCase):
     def test_get_rule_id_by_name(self):
         """Gets the rule id based on rule name"""
         domain_objects = self.haanna.get_domain_objects()
-        self.assertTrue(len(self.haanna.get_rule_id_by_name(domain_objects, 'Thermostat presets')) > 0)
+        if not self.haanna.is_legacy_anna(domain_objects):  # only test when it is not a legacy model
+            self.assertTrue(len(self.haanna.get_rule_id_by_name(domain_objects, 'Thermostat presets')) > 0)
         time.sleep(3)
 
     def test_get_preset_dictionary(self):
         """Gets the available presets based on rule name"""
         domain_objects = self.haanna.get_domain_objects()
-        rule_id = self.haanna.get_rule_id_by_name(domain_objects, 'Thermostat presets')
-        self.assertTrue(len(self.haanna.get_preset_dictionary(domain_objects, rule_id)) > 0)
+        if not self.haanna.is_legacy_anna(domain_objects):  # only test when it is not a legacy model
+            rule_id = self.haanna.get_rule_id_by_name(domain_objects, 'Thermostat presets')
+            self.assertTrue(len(self.haanna.get_preset_dictionary(domain_objects, rule_id)) > 0)
         time.sleep(3)
+
+    def test_get_heating_status(self):
+        """Gets the heating status - Hard to reproduce in a test; only verify the code does not raise an exception"""
+        domain_objects = self.haanna.get_domain_objects()
+        try:
+            self.haanna.get_heating_status(domain_objects)
+        except:
+            assert False, "Unexpected exception"
+
+    def test_get_mode(self):
+        """Gets the mode - Hard to reproduce in a test; only verify the code does not raise an exception"""
+        domain_objects = self.haanna.get_domain_objects()
+        try:
+            self.haanna.get_mode(domain_objects)
+        except:
+            assert False, "Unexpected exception"
