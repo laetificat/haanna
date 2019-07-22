@@ -60,10 +60,24 @@ Usage
   heating = api.get_heating_status(domain_objects)
   print(heating)
 
-..
+  # Get schemas or schedules available on the device.
+  schemas = get_schema_names(domain_objects)
+  print(schemas)
+
+  # Sends a set request to the schema with the given name
+  set_schema_state(domain_objects, schema=None, state)
+
+  # Get active schema or determine last modified.
+  schema = get_active_schema_name(domain_objects)
+  print(schemas)
+
+  # Gets the mode the thermostat is in (active schedule true or false)
+  state = get_schema_state(domain_objects)
+  print(state)
+""""
+
 
 To do:
 """"""
 - Optimize fetching of domain objects
 - Add support for custom port mapping
-- Add support for setting operation mode (i.e. schedule on/off)
