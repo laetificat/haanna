@@ -123,3 +123,4 @@ class TestHaannaMethods(unittest.TestCase):
             self.haanna.get_mode(domain_objects)
         except:
             assert False, "Unexpected exception"
+
