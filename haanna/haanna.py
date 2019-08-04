@@ -5,6 +5,8 @@ import requests
 import datetime
 import pytz
 import xml.etree.cElementTree as Etree
+# For python 3.6 strptime fix
+import re
 
 USERNAME = ''
 PASSWORD = ''
@@ -405,7 +407,10 @@ class Haanna(object):
                                         + "']/name").text
                 schema_date = root.find("rule[@id='" + schema_id
                                         + "']/modified_date").text
-                schema_time = datetime.datetime.strptime(schema_date,
+                # Python 3.6 fix (%z %Z issue)
+                corrected = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$', 
+                                   r'\1\2\3', schema_date)
+                schema_time = datetime.datetime.strptime(corrected,
                                                          date_format)
                 schemas[schema_name] = (schema_time -
                                         epoch).total_seconds()
