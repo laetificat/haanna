@@ -115,6 +115,14 @@ class TestHaannaMethods(unittest.TestCase):
             self.haanna.get_heating_status(domain_objects)
         except:
             assert False, "Unexpected exception"
+    
+    def test_get_domestic_hot_water_status(self):
+        """Gets the domestic hot water status - Hard to reproduce in a test; only verify the code does not raise an exception"""
+        domain_objects = self.haanna.get_domain_objects()
+        try:
+            self.haanna.get_domestic_hot_water_status(domain_objects)
+        except:
+            assert False, "Unexpected exception"
 
     def test_get_mode(self):
         """Gets the mode - Hard to reproduce in a test; only verify the code does not raise an exception"""
