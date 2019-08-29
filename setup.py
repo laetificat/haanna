@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(
-    name='pyhaanna',
+    name='haanna',
     version='0.11.0',
     description='Plugwise Anna API to use in conjunction with Home Assistant.',
     long_description='Plugwise Anna API to use in conjunction with Home Assistant, but it can also be used without Home Assistant.',
@@ -14,7 +14,7 @@ setup(
     author='Laetificat',
     author_email='k.heruer@gmail.com',
     license='MIT',
-    packages=['pyhaanna'],
+    packages=['haanna'],
     install_requires=['requests','datetime','pytz'],
     zip_safe=False
 )
