@@ -127,20 +127,16 @@ class Haanna(object):
 
     def get_schema_state(self, root):
         """
-        Gets the mode the thermostat is in (active schedule true or false)
+        Gets the mode the thermostat is in (active schedule is true or false)
         """
         if self.is_legacy_anna(root):
             locator = "module/services/schedule_state/measurement"
             return root.find(locator).text == 'on'
         else:
-            locator = 'zone_preset_based_on_time_and_presence_with_override'
-            rule_id = self.get_rule_id_by_template_tag(root, locator)
-
-            if rule_id is None:
-                raise RuleIdNotFoundException("Could not find the rule id.")
-
-            schema_active = self.get_active_mode(root, rule_id)
-            return schema_active
+            log_type = 'schedule_state'
+            locator = "appliance[type='thermostat']/logs/point_log[type='" \
+                  + log_type+"']/period/measurement"
+            return root.find(locator).text == 'on'
 
     @staticmethod
     def get_rule_id_by_template_tag(root, rule_name):
@@ -229,6 +225,19 @@ class Haanna(object):
                   + log_type+"']/period/measurement"
         return root.find(locator).text == 'on'
 
+    def get_domestic_hot_water_status(self, root):
+        """
+        Gets the domestic hot water status
+        """
+        #if self.is_legacy_anna(root):
+        #    locator = "module/services/schedule_state/measurement"
+        #    return root.find(locator).text == 'on'
+        #else:
+        log_type = 'domestic_hot_water_state'
+        locator = "appliance[type='heater_central']/logs/point_log[type='" \
+            + log_type+"']/period/measurement"
+        return root.find(locator).text == 'on'
+
     def get_current_preset(self, root):
         """Gets the current active preset"""
         if self.is_legacy_anna(root):
@@ -239,9 +248,11 @@ class Haanna(object):
             else:
                 return active_rule.attrib['icon']
         else:
-            locator = "appliance[type='thermostat']/location"
-            location_id = root.find(locator).attrib['id']
-            return root.find("location[@id='" + location_id + "']/preset").text
+            log_type = 'preset_state'
+            locator = "appliance[type='thermostat']/logs/point_log[type='" \
+                  + log_type+"']/period/measurement"
+            return root.find(locator).text
+        
 
     def get_temperature(self, root):
         """Gets the temperature from the thermostat"""
