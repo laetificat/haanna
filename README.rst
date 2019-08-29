@@ -43,11 +43,11 @@ Usage
   presets = api.get_presets(domain_objects)
   print(presets)
 
-  # Get the current active preset
+  # Get the current active preset, can now also be 'none'
   current_preset = api.get_current_preset(domain_objects)
   print(current_preset)
 
-  # Set a preset
+  # Set a preset, e.g. 'away'
   preset = api.set_preset(domain_objects, 'away')
   print(preset)
 
@@ -60,6 +60,10 @@ Usage
   heating = api.get_heating_status(domain_objects)
   print(heating)
 
+  # Get domestic hot water status (true = water is being heated, tap on display)
+  hot_water = api.get_domestic_hot_water_status(domain_objects)
+  print(hot_water)
+  
   # Get schemas or schedules available on the device.
   schemas = get_schema_names(domain_objects)
   print(schemas)
