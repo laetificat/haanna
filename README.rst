@@ -30,6 +30,10 @@ Usage
   # Get the temperature
   temperature = api.get_temperature(domain_objects)
   print(temperature)
+  
+  # Get the temperature setting of the selected schema
+  temperature = api.get_schedule_temperature
+  print(temperature)
 
   # Get the outdoor temperature
   temperature = api.get_outdoor_temperature(domain_objects)
