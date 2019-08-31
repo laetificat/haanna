@@ -124,7 +124,7 @@ class Haanna(object):
 
             schema_active = self.get_active_name(root, rule_id)
             return schema_active
-
+        
     def get_schema_state(self, root):
         """
         Gets the mode the thermostat is in (active schedule is true or false)
@@ -253,6 +253,12 @@ class Haanna(object):
                   + log_type+"']/period/measurement"
             return root.find(locator).text
         
+    def get_schedule_temperature(self, root):
+        """Gets the temperature setting from the selected schedule"""
+        point_log_id = self.get_point_log_id(root, 'schedule_temperature')
+        measurement = self.get_measurement_from_point_log(root, point_log_id)
+
+        return float(measurement)
 
     def get_temperature(self, root):
         """Gets the temperature from the thermostat"""
