@@ -260,27 +260,36 @@ class Haanna(object):
 
         return float(measurement)
 
-    def get_temperature(self, root):
-        """Gets the temperature from the thermostat"""
-        point_log_id = self.get_point_log_id(root, 'temperature')
-        measurement = self.get_measurement_from_point_log(root, point_log_id)
+    def get_room_temperature(self, root):
+        """Gets the room temperature from the thermostat"""
+        room_temp_point_log_id = self.get_point_log_id(root, 'temperature')
+        measurement = self.get_measurement_from_point_log(
+                root, room_temp_point_log_id)
 
         return float(measurement)
 
     def get_target_temperature(self, root):
         """Gets the target temperature from the thermostat"""
-        target_temperature_log_id = self.get_point_log_id(root, 'thermostat')
+        target_temp_log_id = self.get_point_log_id(root, 'target_temperature')
         measurement = self.get_measurement_from_point_log(
-                root, target_temperature_log_id)
+                root, target_temp_log_id)
+
+        return float(measurement)
+
+    def get_thermostat_temperature(self, root):
+        """Gets the target temperature from the thermostat"""
+        thermostat_log_id = self.get_point_log_id(root, 'thermostat')
+        measurement = self.get_measurement_from_point_log(
+                root, thermostat_log_id)
 
         return float(measurement)
 
     def get_outdoor_temperature(self, root):
         """Gets the temperature from the thermostat"""
-        outdoor_temperature_log_id = self.get_point_log_id(
+        outdoor_temp_log_id = self.get_point_log_id(
                 root, 'outdoor_temperature')
         measurement = self.get_measurement_from_point_log(
-                root, outdoor_temperature_log_id)
+                root, outdoor_temp_log_id)
 
         return float(measurement)
 
