@@ -27,8 +27,8 @@ Usage
   temperature = api.set_temperature(domain_objects, 22.50)
   print(temperature)
 
-  # Get the temperature
-  temperature = api.get_temperature(domain_objects)
+  # Get the room temperature
+  temperature = api.get_room_temperature(domain_objects)
   print(temperature)
   
   # Get the temperature setting of the selected schema
@@ -41,6 +41,10 @@ Usage
 
   # Get the target temperature
   temperature = api.get_target_temperature(domain_objects)
+  print(temperature)
+  
+  # Get the thermostat temperature
+  temperature = api.get_thermostat_temperature(domain_objects)
   print(temperature)
 
   # Get the available presets
