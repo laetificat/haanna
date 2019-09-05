@@ -27,8 +27,8 @@ Usage
   temperature = api.set_temperature(domain_objects, 22.50)
   print(temperature)
 
-  # Get the room temperature
-  temperature = api.get_room_temperature(domain_objects)
+  # Get the current room temperature
+  temperature = api.get_current_temperature(domain_objects)
   print(temperature)
   
   # Get the temperature setting of the selected schema
