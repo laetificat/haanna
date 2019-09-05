@@ -225,7 +225,8 @@ class Haanna(object):
                   + log_type+"']/period/measurement"
         if root.find(locator):
             return root.find(locator).text == 'on'
-        return None
+        else:
+            return None
     
     def get_cooling_status(self, root):
         """Gets the active cooling status"""
@@ -234,7 +235,8 @@ class Haanna(object):
         locator = "appliance[type='heater_central']/logs/point_log[type='cooling_state']/period/measurement"
         if root.find(locator):
             return root.find(locator).text == 'on'
-        return None
+        else:
+            return None
         
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
@@ -245,7 +247,8 @@ class Haanna(object):
             + log_type+"']/period/measurement"
         if root.find(locator):
             return root.find(locator).text == 'on'
-        return None
+        else:
+            return None
         
     def get_current_preset(self, root):
         """Gets the current active preset"""
