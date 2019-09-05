@@ -44,10 +44,10 @@ class TestHaannaMethods(unittest.TestCase):
         self.assertTrue(len(self.haanna.get_current_preset(domain_objects)) > 0)
         time.sleep(3)
 
-    def test_get_room_temperature(self):
-        """Get the current temperature"""
+    def test_get_current_temperature(self):
+        """Get the current room temperature"""
         domain_objects = self.haanna.get_domain_objects()
-        self.assertIsInstance(self.haanna.get_room_temperature(domain_objects), float)
+        self.assertIsInstance(self.haanna.get_current_temperature(domain_objects), float)
         time.sleep(3)
 
     def test_get_target_temperature(self):
