@@ -67,6 +67,11 @@ Usage
   # Get heating status (true = heating is on, flame on display)
   heating = api.get_heating_status(domain_objects)
   print(heating)
+  
+  # Get cooling status (true = cooling is on, fan on display)
+  # Will always return false if cooling is not supported by boiler
+  cooling = api.get_cooling_status(domain_objects)
+  print(cooling)
 
   # Get domestic hot water status (true = water is being heated, tap on display)
   hot_water = api.get_domestic_hot_water_status(domain_objects)
