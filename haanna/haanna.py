@@ -227,17 +227,16 @@ class Haanna(object):
 
     def get_domestic_hot_water_status(self, root):
         """
-        Gets the domestic hot water status
+        Gets the domestic hot water status - not implemented for legacy Anna
         """
-        #if self.is_legacy_anna(root):
-        #    locator = "module/services/schedule_state/measurement"
-        #    return root.find(locator).text == 'on'
-        #else:
         log_type = 'domestic_hot_water_state'
         locator = "appliance[type='heater_central']/logs/point_log[type='" \
             + log_type+"']/period/measurement"
-        return root.find(locator).text == 'on'
-
+        if root.find(locator):
+          return root.find(locator).text == 'on'
+        else:
+          return None
+        
     def get_current_preset(self, root):
         """Gets the current active preset"""
         if self.is_legacy_anna(root):
@@ -260,11 +259,11 @@ class Haanna(object):
 
         return float(measurement)
 
-    def get_room_temperature(self, root):
-        """Gets the room temperature from the thermostat"""
-        room_temp_point_log_id = self.get_point_log_id(root, 'temperature')
+    def get_current_temperature(self, root):
+        """Gets the curent (room) temperature from the thermostat - match to HA name"""
+        current_temp_point_log_id = self.get_point_log_id(root, 'temperature')
         measurement = self.get_measurement_from_point_log(
-                root, room_temp_point_log_id)
+                root, current_temp_point_log_id)
 
         return float(measurement)
 
