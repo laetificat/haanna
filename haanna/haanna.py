@@ -230,7 +230,7 @@ class Haanna(object):
     def get_cooling_status(self, root):
         """Gets the active cooling status"""
         if self.is_legacy_anna(root):
-            return False # cooling not supported on legacy Anna
+            return None # cooling not supported on legacy Anna
         locator = "appliance[type='heater_central']/logs/point_log[type='cooling_state']/period/measurement"
         if root.find(locator) is not None:
             return root.find(locator).text == 'on'
@@ -239,7 +239,7 @@ class Haanna(object):
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
         if self.is_legacy_anna(root):
-            return False # dhw not supported on legacy Anna?
+            return None # dhw not supported on legacy Anna?
         log_type = 'domestic_hot_water_state'
         locator = "appliance[type='heater_central']/logs/point_log[type='" \
             + log_type+"']/period/measurement"
