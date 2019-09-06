@@ -299,8 +299,10 @@ class Haanna(object):
                 root, 'outdoor_temperature')
         measurement = self.get_measurement_from_point_log(
                 root, outdoor_temp_log_id)
+        value = float(measurement)
+        value = round(value, 1)
 
-        return float(measurement)
+        return (value)
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
