@@ -68,9 +68,6 @@ class Haanna(object):
                 if rule_id is None:
                     raise RuleIdNotFoundException("Could not find the rule id.")
 
-            if rule_id is None:
-                raise RuleIdNotFoundException("Could not find the rule id.")
-
             presets = self.get_preset_dictionary(root, rule_id)
             return presets
 
