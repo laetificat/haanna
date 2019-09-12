@@ -59,11 +59,14 @@ class Haanna(object):
         if self.is_legacy_anna(root):
             return self.__get_preset_dictionary_v1(root)
         else:
-            rule_id = self.get_rule_id_by_name(root,
-                                               'Thermostat presets')
+            rule_id = self.get_rule_id_by_template_tag(root,
+                                                       'zone_setpoint_and_state_based_on_preset')[0]
 
             if rule_id is None:
-                raise RuleIdNotFoundException("Could not find the rule id.")
+                rule_id = self.get_rule_id_by_name(root,
+                                                   'Thermostat presets')
+                if rule_id is None:
+                    raise RuleIdNotFoundException("Could not find the rule id.")
 
             presets = self.get_preset_dictionary(root, rule_id)
             return presets
