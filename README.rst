@@ -27,8 +27,12 @@ Usage
   temperature = api.set_temperature(domain_objects, 22.50)
   print(temperature)
 
-  # Get the temperature
-  temperature = api.get_temperature(domain_objects)
+  # Get the current room temperature
+  temperature = api.get_current_temperature(domain_objects)
+  print(temperature)
+  
+  # Get the temperature setting of the selected schema
+  temperature = api.get_schedule_temperature
   print(temperature)
 
   # Get the outdoor temperature
@@ -38,16 +42,20 @@ Usage
   # Get the target temperature
   temperature = api.get_target_temperature(domain_objects)
   print(temperature)
+  
+  # Get the thermostat temperature
+  temperature = api.get_thermostat_temperature(domain_objects)
+  print(temperature)
 
   # Get the available presets
   presets = api.get_presets(domain_objects)
   print(presets)
 
-  # Get the current active preset
+  # Get the current active preset, can now also be 'none'
   current_preset = api.get_current_preset(domain_objects)
   print(current_preset)
 
-  # Set a preset
+  # Set a preset, e.g. 'away'
   preset = api.set_preset(domain_objects, 'away')
   print(preset)
 
@@ -59,7 +67,16 @@ Usage
   # Get heating status (true = heating is on, flame on display)
   heating = api.get_heating_status(domain_objects)
   print(heating)
+  
+  # Get cooling status (true = cooling is on, fan on display)
+  # Will always return false if cooling is not supported by boiler
+  cooling = api.get_cooling_status(domain_objects)
+  print(cooling)
 
+  # Get domestic hot water status (true = water is being heated, tap on display)
+  hot_water = api.get_domestic_hot_water_status(domain_objects)
+  print(hot_water)
+  
   # Get schemas or schedules available on the device.
   schemas = get_schema_names(domain_objects)
   print(schemas)

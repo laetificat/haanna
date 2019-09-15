@@ -127,23 +127,19 @@ class Haanna(object):
 
             schema_active = self.get_active_name(root, rule_id)
             return schema_active
-
+        
     def get_schema_state(self, root):
         """
-        Gets the mode the thermostat is in (active schedule true or false)
+        Gets the mode the thermostat is in (active schedule is true or false)
         """
         if self.is_legacy_anna(root):
             locator = "module/services/schedule_state/measurement"
             return root.find(locator).text == 'on'
         else:
-            locator = 'zone_preset_based_on_time_and_presence_with_override'
-            rule_id = self.get_rule_id_by_template_tag(root, locator)
-
-            if rule_id is None:
-                raise RuleIdNotFoundException("Could not find the rule id.")
-
-            schema_active = self.get_active_mode(root, rule_id)
-            return schema_active
+            log_type = 'schedule_state'
+            locator = "appliance[type='thermostat']/logs/point_log[type='" \
+                  + log_type+"']/period/measurement"
+            return root.find(locator).text == 'on'
 
     @staticmethod
     def get_rule_id_by_template_tag(root, rule_name):
@@ -230,8 +226,30 @@ class Haanna(object):
             log_type = 'boiler_state'
         locator = "appliance[type='heater_central']/logs/point_log[type='" \
                   + log_type+"']/period/measurement"
-        return root.find(locator).text == 'on'
-
+        if root.find(locator) is not None:
+            return root.find(locator).text == 'on'
+        return None
+    
+    def get_cooling_status(self, root):
+        """Gets the active cooling status"""
+        if self.is_legacy_anna(root):
+            return None # cooling not supported on legacy Anna
+        locator = "appliance[type='heater_central']/logs/point_log[type='cooling_state']/period/measurement"
+        if root.find(locator) is not None:
+            return root.find(locator).text == 'on'
+        return None
+        
+    def get_domestic_hot_water_status(self, root):
+        """Gets the domestic hot water status"""
+        if self.is_legacy_anna(root):
+            return None # dhw not supported on legacy Anna?
+        log_type = 'domestic_hot_water_state'
+        locator = "appliance[type='heater_central']/logs/point_log[type='" \
+            + log_type+"']/period/measurement"
+        if root.find(locator) is not None:
+            return root.find(locator).text == 'on'
+        return None
+        
     def get_current_preset(self, root):
         """Gets the current active preset"""
         if self.is_legacy_anna(root):
@@ -242,33 +260,52 @@ class Haanna(object):
             else:
                 return active_rule.attrib['icon']
         else:
-            locator = "appliance[type='thermostat']/location"
-            location_id = root.find(locator).attrib['id']
-            return root.find("location[@id='" + location_id + "']/preset").text
-
-    def get_temperature(self, root):
-        """Gets the temperature from the thermostat"""
-        point_log_id = self.get_point_log_id(root, 'temperature')
+            log_type = 'preset_state'
+            locator = "appliance[type='thermostat']/logs/point_log[type='" \
+                  + log_type+"']/period/measurement"
+            return root.find(locator).text
+        
+    def get_schedule_temperature(self, root):
+        """Gets the temperature setting from the selected schedule"""
+        point_log_id = self.get_point_log_id(root, 'schedule_temperature')
         measurement = self.get_measurement_from_point_log(root, point_log_id)
+
+        return float(measurement)
+
+    def get_current_temperature(self, root):
+        """Gets the curent (room) temperature from the thermostat - match to HA name"""
+        current_temp_point_log_id = self.get_point_log_id(root, 'temperature')
+        measurement = self.get_measurement_from_point_log(
+                root, current_temp_point_log_id)
 
         return float(measurement)
 
     def get_target_temperature(self, root):
         """Gets the target temperature from the thermostat"""
-        target_temperature_log_id = self.get_point_log_id(root, 'thermostat')
+        target_temp_log_id = self.get_point_log_id(root, 'target_temperature')
         measurement = self.get_measurement_from_point_log(
-                root, target_temperature_log_id)
+                root, target_temp_log_id)
+
+        return float(measurement)
+
+    def get_thermostat_temperature(self, root):
+        """Gets the target temperature from the thermostat"""
+        thermostat_log_id = self.get_point_log_id(root, 'thermostat')
+        measurement = self.get_measurement_from_point_log(
+                root, thermostat_log_id)
 
         return float(measurement)
 
     def get_outdoor_temperature(self, root):
         """Gets the temperature from the thermostat"""
-        outdoor_temperature_log_id = self.get_point_log_id(
+        outdoor_temp_log_id = self.get_point_log_id(
                 root, 'outdoor_temperature')
         measurement = self.get_measurement_from_point_log(
-                root, outdoor_temperature_log_id)
+                root, outdoor_temp_log_id)
+        value = float(measurement)
+        value = round(value, 1)
 
-        return float(measurement)
+        return (value)
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""

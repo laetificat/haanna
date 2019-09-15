@@ -44,16 +44,22 @@ class TestHaannaMethods(unittest.TestCase):
         self.assertTrue(len(self.haanna.get_current_preset(domain_objects)) > 0)
         time.sleep(3)
 
-    def test_get_temperature(self):
-        """Get the current temperature"""
+    def test_get_current_temperature(self):
+        """Get the current room temperature"""
         domain_objects = self.haanna.get_domain_objects()
-        self.assertIsInstance(self.haanna.get_temperature(domain_objects), float)
+        self.assertIsInstance(self.haanna.get_current_temperature(domain_objects), float)
         time.sleep(3)
 
     def test_get_target_temperature(self):
         """Get the target temperature"""
         domain_objects = self.haanna.get_domain_objects()
         self.assertIsInstance(self.haanna.get_target_temperature(domain_objects), float)
+        time.sleep(3)
+        
+    def test_get_thermostat_temperature(self):
+        """Get the target temperature"""
+        domain_objects = self.haanna.get_domain_objects()
+        self.assertIsInstance(self.haanna.get_thermostat_temperature(domain_objects), float)
         time.sleep(3)
 
     def test_get_outdoor_temperature(self):
@@ -113,6 +119,22 @@ class TestHaannaMethods(unittest.TestCase):
         domain_objects = self.haanna.get_domain_objects()
         try:
             self.haanna.get_heating_status(domain_objects)
+        except:
+            assert False, "Unexpected exception"
+            
+    def test_get_cooling_status(self):
+        """Gets the cooling status - Hard to reproduce in a test; only verify the code does not raise an exception"""
+        domain_objects = self.haanna.get_domain_objects()
+        try:
+            self.haanna.get_cooling_status(domain_objects)
+        except:
+            assert False, "Unexpected exception"
+    
+    def test_get_domestic_hot_water_status(self):
+        """Gets the domestic hot water status - Hard to reproduce in a test; only verify the code does not raise an exception"""
+        domain_objects = self.haanna.get_domain_objects()
+        try:
+            self.haanna.get_domestic_hot_water_status(domain_objects)
         except:
             assert False, "Unexpected exception"
 
