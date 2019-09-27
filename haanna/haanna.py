@@ -52,7 +52,8 @@ class Haanna(object):
         Detect Anna legacy version based on different domain_objects
         structure
         """
-        return root.find("appliance[type='thermostat']/location") is None
+        locate = root.find("appliance[type='thermostat']/location")
+        return (locate is None)
 
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
