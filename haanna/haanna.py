@@ -52,9 +52,9 @@ class Haanna(object):
         Detect Anna legacy version based on different domain_objects
         structure
         """
-        locate = root.find("appliance[type='thermostat']/location")
-        return (locate is None)
-
+        locator = "appliance[type='thermostat']/location"
+        return root.find(locator) is None
+    
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
         if self.is_legacy_anna(root):
@@ -116,8 +116,9 @@ class Haanna(object):
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
         if self.is_legacy_anna(root):
-            # return root.find("module/services/schedule_state/measurement")
-            #                  .text =='on'
+            locator = "module/services/schedule_state/measurement"
+            if root.find(locator) is not None:
+                return root.find(locator).text =='on'
             return None
         else:
             locator = 'zone_preset_based_on_time_and_presence_with_override'
@@ -135,12 +136,16 @@ class Haanna(object):
         """
         if self.is_legacy_anna(root):
             locator = "module/services/schedule_state/measurement"
-            return root.find(locator).text == 'on'
+            if root.find(locator) is not None:
+                return root.find(locator).text =='on'
+            return None
         else:
             log_type = 'schedule_state'
             locator = "appliance[type='thermostat']/logs/point_log[type='" \
                   + log_type+"']/period/measurement"
-            return root.find(locator).text == 'on'
+            if root.find(locator) is not None:
+                return root.find(locator).text =='on'
+            return None
 
     @staticmethod
     def get_rule_id_by_template_tag(root, rule_name):
@@ -190,7 +195,6 @@ class Haanna(object):
             if r.status_code != requests.codes.ok:
                 raise CouldNotSetPresetException("Could not set the "
                                                  "given preset: " + r.text)
-
             return r.text
 
     @staticmethod
@@ -264,6 +268,7 @@ class Haanna(object):
             log_type = 'preset_state'
             locator = "appliance[type='thermostat']/logs/point_log[type='" \
                   + log_type+"']/period/measurement"
+            
             return root.find(locator).text
         
     def get_schedule_temperature(self, root):
