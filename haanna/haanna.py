@@ -81,6 +81,7 @@ class Haanna(object):
             rule_name = schema.find('name').text
             if rule_name != "Thermostat presets":
                 result.append(rule_name)
+                
         return result
 
     def set_schema_state(self, root, schema, state):
@@ -120,6 +121,7 @@ class Haanna(object):
             if root.find(locator) is not None:
                 return root.find(locator).text =='on'
             return None
+        
         else:
             locator = 'zone_preset_based_on_time_and_presence_with_override'
             rule_id = self.get_rule_id_by_template_tag(root, locator)
@@ -139,6 +141,7 @@ class Haanna(object):
             if root.find(locator) is not None:
                 return root.find(locator).text =='on'
             return None
+        
         else:
             log_type = 'schedule_state'
             locator = "appliance[type='thermostat']/logs/point_log[type='" \
@@ -155,6 +158,7 @@ class Haanna(object):
         for rule in rules:
             if rule.find("template").attrib['tag'] == rule_name:
                 schema_ids.append(rule.attrib['id'])
+                
         return schema_ids
 
     def set_preset(self, root, preset):
@@ -205,6 +209,7 @@ class Haanna(object):
         if rule is None:
             raise CouldNotSetPresetException("Could not find preset '"
                                              + preset + "'")
+            
         else:
             rule_id = rule.attrib['id']
             r = requests.put(
@@ -229,6 +234,7 @@ class Haanna(object):
         log_type = 'central_heating_state'
         if self.is_legacy_anna(root):
             log_type = 'boiler_state'
+        
         locator = "appliance[type='heater_central']/logs/point_log[type='" \
                   + log_type+"']/period/measurement"
         if root.find(locator) is not None:
@@ -239,7 +245,10 @@ class Haanna(object):
         """Gets the active cooling status"""
         if self.is_legacy_anna(root):
             return None # cooling not supported on legacy Anna
-        locator = "appliance[type='heater_central']/logs/point_log[type='cooling_state']/period/measurement"
+        
+        log-type = 'cooling_state'
+        locator = "appliance[type='heater_central']/logs/point_log[type='" \
+                + log_type+"']/period/measurement"
         if root.find(locator) is not None:
             return root.find(locator).text == 'on'
         return None
@@ -248,6 +257,7 @@ class Haanna(object):
         """Gets the domestic hot water status"""
         if self.is_legacy_anna(root):
             return None # dhw not supported on legacy Anna?
+        
         log_type = 'domestic_hot_water_state'
         locator = "appliance[type='heater_central']/logs/point_log[type='" \
             + log_type+"']/period/measurement"
@@ -264,6 +274,7 @@ class Haanna(object):
                 return "none"
             else:
                 return active_rule.attrib['icon']
+            
         else:
             log_type = 'preset_state'
             locator = "appliance[type='thermostat']/logs/point_log[type='" \
