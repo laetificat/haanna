@@ -324,7 +324,7 @@ class Haanna(object):
                 None
             )  # cooling not supported on legacy Anna
 
-        log - type = "cooling_state"
+        log_type = "cooling_state"
         locator = (
             "appliance[type='heater_central']/logs/point_log[type='"
             + log_type
