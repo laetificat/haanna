@@ -11,8 +11,8 @@ setup(
     long_description='Plugwise Anna API to use in conjunction with Home Assistant, but it can also be used without Home Assistant.',
     keywords='HomeAssistant HA Home Assistant Anna Plugwise',
     url='https://github.com/laetificat/haanna',
-    author='Laetificat','bouwew'
-    author_email='k.heruer@gmail.com','bouwe@westerdijk.info'
+    author='Laetificat','bouwew',
+    author_email='k.heruer@gmail.com','bouwe@westerdijk.info',
     license='MIT',
     packages=['haanna'],
     install_requires=['requests','datetime','pytz'],
