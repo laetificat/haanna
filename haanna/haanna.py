@@ -146,11 +146,7 @@ class Haanna(object):
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
         if self.is_legacy_anna(root):
-            locator = (
-                "module/services/schedule_state/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
+            # detection for legacy anna not implemented yet, input needed
             return None
 
         else:
