@@ -67,6 +67,24 @@ class TestHaannaMethods(unittest.TestCase):
         domain_objects = self.haanna.get_domain_objects()
         self.assertIsInstance(self.haanna.get_outdoor_temperature(domain_objects), float)
         time.sleep(3)
+        
+    def test_get_illuminance(self):
+        """Get the illuminance"""
+        domain_objects = self.haanna.get_domain_objects()
+        self.assertIsInstance(self.haanna.get_illuminance(domain_objects), float)
+        time.sleep(3)
+        
+    def test_get_boiler_temperature(self):
+        """Get the boiler temperature"""
+        domain_objects = self.haanna.get_domain_objects()
+        self.assertIsInstance(self.haanna.get_boiler_temperature(domain_objects), float)
+        time.sleep(3)
+        
+    def test_get_water_pressure(self):
+        """Get the boiler water pressure"""
+        domain_objects = self.haanna.get_domain_objects()
+        self.assertIsInstance(self.haanna.get_water_pressure(domain_objects), float)
+        time.sleep(3)
 
     def test_set_temperature(self):
         """Set a new target temperature"""
