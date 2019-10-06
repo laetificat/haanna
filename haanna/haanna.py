@@ -381,7 +381,9 @@ class Haanna(object):
             root, point_log_id
         )
 
-        return float(measurement)
+        if measurement is not None:
+            return float(measurement)
+        return None
 
     def get_current_temperature(self, root):
         """Gets the curent (room) temperature from the thermostat - match to HA name"""
@@ -392,7 +394,9 @@ class Haanna(object):
             root, current_temp_point_log_id
         )
 
-        return float(measurement)
+        if measurement is not None:
+            return float(measurement)
+        return None
 
     def get_target_temperature(self, root):
         """Gets the target temperature from the thermostat"""
@@ -403,7 +407,9 @@ class Haanna(object):
             root, target_temp_log_id
         )
 
-        return float(measurement)
+        if measurement is not None:
+            return float(measurement)
+        return None
 
     def get_thermostat_temperature(self, root):
         """Gets the target temperature from the thermostat"""
@@ -414,7 +420,9 @@ class Haanna(object):
             root, thermostat_log_id
         )
 
-        return float(measurement)
+        if measurement is not None:
+            return float(measurement)
+        return None
 
     def get_outdoor_temperature(self, root):
         """Gets the temperature from the thermostat"""
@@ -424,10 +432,12 @@ class Haanna(object):
         measurement = self.get_measurement_from_point_log(
             root, outdoor_temp_log_id
         )
-        value = float(measurement)
-        value = round(value, 1)
 
-        return value
+        if measurement is not None:
+            value = float(measurement)
+            value = round(value, 1)
+            return value
+        return None
 
     def get_illuminance(self, root):
         """Gets the illuminance value from the thermostat"""
@@ -443,7 +453,9 @@ class Haanna(object):
                 root, point_log_id
             )
 
-            return float(measurement)
+            if measurement is not None:
+                return float(measurement)
+            return None
 
     def get_boiler_temperature(self, root):
         """Gets the boiler_temperature value from the thermostat"""
@@ -458,10 +470,12 @@ class Haanna(object):
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
-            value = float(measurement)
-            value = round(value, 1)
 
-            return value
+            if measurement is not None:
+                value = float(measurement)
+                value = round(value, 1)
+                return value
+            return None
 
     def get_water_pressure(self, root):
         """Gets the water pressure value from the thermostat"""
@@ -476,7 +490,9 @@ class Haanna(object):
                 root, point_log_id
             )
 
-            return float(measurement)
+            if measurement is not None:
+                return float(measurement)
+            return None
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
