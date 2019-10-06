@@ -427,6 +427,41 @@ class Haanna(object):
 
         return value
 
+    def get_illuminance(self, root):
+        """Gets the illuminance value from the thermostat"""
+        point_log_id = self.get_point_log_id(
+            root, "illuminance"
+        )
+        measurement = self.get_measurement_from_point_log(
+            root, point_log_id
+        )
+
+        return float(measurement)
+
+    def get_boiler_temperature(self, root):
+        """Gets the boiler_temperature value from the thermostat"""
+        point_log_id = self.get_point_log_id(
+            root, "boiler_temperature"
+        )
+        measurement = self.get_measurement_from_point_log(
+            root, point_log_id
+        )
+        value = float(measurement)
+        value = round(value, 1)
+
+        return value
+
+    def get_water_pressure(self, root):
+        """Gets the water pressure value from the thermostat"""
+        point_log_id = self.get_point_log_id(
+            root, "central_heater_water_pressure"
+        )
+        measurement = self.get_measurement_from_point_log(
+            root, point_log_id
+        )
+
+        return float(measurement)
+
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
         if self.is_legacy_anna(root):
