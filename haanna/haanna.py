@@ -568,20 +568,26 @@ class Haanna(object):
     @staticmethod
     def get_point_log_id(root, log_type):
         """Gets the point log ID based on log type"""
-        return root.find(
+        locator = (
             "module/services/*[@log_type='"
             + log_type
             + "']/functionalities/point_log"
-        ).attrib["id"]
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).attrib["id"]
+        return None
 
     @staticmethod
     def get_measurement_from_point_log(root, point_log_id):
         """Gets the measurement from a point log based on point log ID"""
-        return root.find(
+        locator = (
             "*/logs/point_log[@id='"
             + point_log_id
             + "']/period/measurement"
-        ).text
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text
+        return None
 
     @staticmethod
     def get_rule_id_by_name(root, rule_name):
