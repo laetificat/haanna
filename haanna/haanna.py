@@ -304,14 +304,15 @@ class Haanna(object):
         if self.is_legacy_anna(root):
             log_type = "boiler_state"
 
-        locator = (
-            "appliance[type='heater_central']/logs/point_log[type='"
-            + log_type
-            + "']/period/measurement"
-        )
-        if root.find(locator) is not None:
-            return root.find(locator).text == "on"
-        return None
+        else:
+            locator = (
+                "appliance[type='heater_central']/logs/point_log[type='"
+                + log_type
+                + "']/period/measurement"
+            )
+            if root.find(locator) is not None:
+                return root.find(locator).text == "on"
+            return None
 
     def get_cooling_status(self, root):
         """Gets the active cooling status"""
@@ -319,31 +320,32 @@ class Haanna(object):
             return (
                 None
             )  # cooling not supported on legacy Anna
-
-        log_type = "cooling_state"
-        locator = (
-            "appliance[type='heater_central']/logs/point_log[type='"
-            + log_type
-            + "']/period/measurement"
-        )
-        if root.find(locator) is not None:
-            return root.find(locator).text == "on"
-        return None
+        else:
+            log_type = "cooling_state"
+            locator = (
+                "appliance[type='heater_central']/logs/point_log[type='"
+                + log_type
+                + "']/period/measurement"
+            )
+            if root.find(locator) is not None:
+                return root.find(locator).text == "on"
+            return None
 
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
         if self.is_legacy_anna(root):
             return None  # dhw not supported on legacy Anna?
 
-        log_type = "domestic_hot_water_state"
-        locator = (
-            "appliance[type='heater_central']/logs/point_log[type='"
-            + log_type
-            + "']/period/measurement"
-        )
-        if root.find(locator) is not None:
-            return root.find(locator).text == "on"
-        return None
+        else:
+            log_type = "domestic_hot_water_state"
+            locator = (
+                "appliance[type='heater_central']/logs/point_log[type='"
+                + log_type
+                + "']/period/measurement"
+            )
+            if root.find(locator) is not None:
+                return root.find(locator).text == "on"
+            return None
 
     def get_current_preset(self, root):
         """Gets the current active preset"""
@@ -429,38 +431,52 @@ class Haanna(object):
 
     def get_illuminance(self, root):
         """Gets the illuminance value from the thermostat"""
-        point_log_id = self.get_point_log_id(
-            root, "illuminance"
-        )
-        measurement = self.get_measurement_from_point_log(
-            root, point_log_id
-        )
+        if self.is_legacy_anna(root):
+            # detection for legacy anna not implemented yet, input needed
+            return None
 
-        return float(measurement)
+        else:
+            point_log_id = self.get_point_log_id(
+                root, "illuminance"
+            )
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
+            )
+
+            return float(measurement)
 
     def get_boiler_temperature(self, root):
         """Gets the boiler_temperature value from the thermostat"""
-        point_log_id = self.get_point_log_id(
-            root, "boiler_temperature"
-        )
-        measurement = self.get_measurement_from_point_log(
-            root, point_log_id
-        )
-        value = float(measurement)
-        value = round(value, 1)
+        if self.is_legacy_anna(root):
+            # detection for legacy anna not implemented yet, input needed
+            return None
 
-        return value
+        else:
+            point_log_id = self.get_point_log_id(
+                root, "boiler_temperature"
+            )
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
+            )
+            value = float(measurement)
+            value = round(value, 1)
+
+            return value
 
     def get_water_pressure(self, root):
         """Gets the water pressure value from the thermostat"""
-        point_log_id = self.get_point_log_id(
-            root, "central_heater_water_pressure"
-        )
-        measurement = self.get_measurement_from_point_log(
-            root, point_log_id
-        )
+        if self.is_legacy_anna(root):
+            # detection for legacy anna not implemented yet, input needed
+            return None
+        else:
+            point_log_id = self.get_point_log_id(
+                root, "central_heater_water_pressure"
+            )
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
+            )
 
-        return float(measurement)
+            return float(measurement)
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
