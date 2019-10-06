@@ -310,7 +310,7 @@ class Haanna(object):
                 + log_type
                 + "']/period/measurement"
             )
-            if locator is not None:
+            if root.find(locator) is not None:
                 return root.find(locator).text == "on"
             return None
 
@@ -327,7 +327,7 @@ class Haanna(object):
                 + log_type
                 + "']/period/measurement"
             )
-            if locator is not None:
+            if root.find(locator) is not None:
                 return root.find(locator).text == "on"
             return None
 
@@ -343,7 +343,7 @@ class Haanna(object):
                 + log_type
                 + "']/period/measurement"
             )
-            if locator is not None:
+            if root.find(locator) is not None:
                 return root.find(locator).text == "on"
             return None
 
