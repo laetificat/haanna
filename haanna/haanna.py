@@ -448,7 +448,9 @@ class Haanna(object):
                 measurement = self.get_measurement_from_point_log(
                     root, point_log_id
                 )
-                return float(measurement)
+                value = float(measurement)
+                value = round(value, 1)
+                return value
             return None
 
     def get_boiler_temperature(self, root):
