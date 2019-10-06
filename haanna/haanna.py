@@ -380,7 +380,7 @@ class Haanna(object):
         measurement = self.get_measurement_from_point_log(
             root, point_log_id
         )
-        
+
         if measurement is not None:
             return float(measurement)
         return None
@@ -393,7 +393,7 @@ class Haanna(object):
         measurement = self.get_measurement_from_point_log(
             root, current_temp_point_log_id
         )
-        
+
         if measurement is not None:
             return float(measurement)
         return None
@@ -406,7 +406,7 @@ class Haanna(object):
         measurement = self.get_measurement_from_point_log(
             root, target_temp_log_id
         )
-        
+
         if measurement is not None:
             return float(measurement)
         return None
@@ -419,7 +419,7 @@ class Haanna(object):
         measurement = self.get_measurement_from_point_log(
             root, thermostat_log_id
         )
-        
+
         if measurement is not None:
             return float(measurement)
         return None
@@ -432,7 +432,7 @@ class Haanna(object):
         measurement = self.get_measurement_from_point_log(
             root, outdoor_temp_log_id
         )
-        
+
         if measurement is not None:
             value = float(measurement)
             value = round(value, 1)
@@ -453,7 +453,7 @@ class Haanna(object):
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
-            
+
             if measurement is not None:
                 return float(measurement)
             return None
@@ -471,7 +471,7 @@ class Haanna(object):
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
-            
+
             if measurement is not None:
                 value = float(measurement)
                 value = round(value, 1)
