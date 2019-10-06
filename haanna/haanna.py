@@ -436,7 +436,6 @@ class Haanna(object):
         if measurement is not None:
             value = float(measurement)
             value = round(value, 1)
-            return float(measurement)
             return value
         return None
 
