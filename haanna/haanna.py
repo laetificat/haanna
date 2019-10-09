@@ -377,11 +377,10 @@ class Haanna(object):
         point_log_id = self.get_point_log_id(
             root, "schedule_temperature"
         )
-        measurement = self.get_measurement_from_point_log(
-            root, point_log_id
-        )
-
-        if measurement is not None:
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
+            )
             return float(measurement)
         return None
 
@@ -390,11 +389,10 @@ class Haanna(object):
         current_temp_point_log_id = self.get_point_log_id(
             root, "temperature"
         )
-        measurement = self.get_measurement_from_point_log(
-            root, current_temp_point_log_id
-        )
-
-        if measurement is not None:
+        if current_temp_point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, current_temp_point_log_id
+            )
             return float(measurement)
         return None
 
@@ -403,11 +401,10 @@ class Haanna(object):
         target_temp_log_id = self.get_point_log_id(
             root, "target_temperature"
         )
-        measurement = self.get_measurement_from_point_log(
-            root, target_temp_log_id
-        )
-
-        if measurement is not None:
+        if target_temp_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, target_temp_log_id
+            )
             return float(measurement)
         return None
 
@@ -416,11 +413,10 @@ class Haanna(object):
         thermostat_log_id = self.get_point_log_id(
             root, "thermostat"
         )
-        measurement = self.get_measurement_from_point_log(
-            root, thermostat_log_id
-        )
-
-        if measurement is not None:
+        if thermostat_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, thermostat_log_id
+            )
             return float(measurement)
         return None
 
@@ -429,11 +425,10 @@ class Haanna(object):
         outdoor_temp_log_id = self.get_point_log_id(
             root, "outdoor_temperature"
         )
-        measurement = self.get_measurement_from_point_log(
-            root, outdoor_temp_log_id
-        )
-
-        if measurement is not None:
+        if outdoor_temp_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, outdoor_temp_log_id
+            )
             value = float(measurement)
             value = round(value, 1)
             return value
@@ -449,12 +444,13 @@ class Haanna(object):
             point_log_id = self.get_point_log_id(
                 root, "illuminance"
             )
-            measurement = self.get_measurement_from_point_log(
-                root, point_log_id
-            )
-
-            if measurement is not None:
-                return float(measurement)
+            if point_log_id is not None:
+                measurement = self.get_measurement_from_point_log(
+                    root, point_log_id
+                )
+                value = float(measurement)
+                value = round(value, 1)
+                return value
             return None
 
     def get_boiler_temperature(self, root):
@@ -467,11 +463,10 @@ class Haanna(object):
             point_log_id = self.get_point_log_id(
                 root, "boiler_temperature"
             )
-            measurement = self.get_measurement_from_point_log(
-                root, point_log_id
-            )
-
-            if measurement is not None:
+            if point_log_id is not None:
+                measurement = self.get_measurement_from_point_log(
+                    root, point_log_id
+                )
                 value = float(measurement)
                 value = round(value, 1)
                 return value
@@ -486,11 +481,10 @@ class Haanna(object):
             point_log_id = self.get_point_log_id(
                 root, "central_heater_water_pressure"
             )
-            measurement = self.get_measurement_from_point_log(
-                root, point_log_id
-            )
-
-            if measurement is not None:
+            if point_log_id is not None:
+                measurement = self.get_measurement_from_point_log(
+                    root, point_log_id
+                )
                 return float(measurement)
             return None
 
@@ -576,20 +570,26 @@ class Haanna(object):
     @staticmethod
     def get_point_log_id(root, log_type):
         """Gets the point log ID based on log type"""
-        return root.find(
+        locator = (
             "module/services/*[@log_type='"
             + log_type
             + "']/functionalities/point_log"
-        ).attrib["id"]
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).attrib["id"]
+        return None
 
     @staticmethod
     def get_measurement_from_point_log(root, point_log_id):
         """Gets the measurement from a point log based on point log ID"""
-        return root.find(
+        locator = (
             "*/logs/point_log[@id='"
             + point_log_id
             + "']/period/measurement"
-        ).text
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text
+        return None
 
     @staticmethod
     def get_rule_id_by_name(root, rule_name):
