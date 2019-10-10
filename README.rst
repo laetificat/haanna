@@ -77,6 +77,18 @@ Usage
   hot_water = api.get_domestic_hot_water_status(domain_objects)
   print(hot_water)
   
+  # Get the illuminance value
+  illuminance = api.get_illuminance(domain_objects)
+  print(illuminance)
+  
+  # Get the current boiler temperature
+  boiler_temp = api.get_boiler_temperature(domain_objects)
+  print(boiler_temp)
+
+  # Get the current boiler 
+  pressure = api.get_water_pressure(domain_objects)
+  print(pressure)
+  
   # Get schemas or schedules available on the device.
   schemas = get_schema_names(domain_objects)
   print(schemas)
@@ -91,7 +103,11 @@ Usage
   # Gets the mode the thermostat is in (active schedule true or false)
   state = get_schema_state(domain_objects)
   print(state)
+  
 """"
+
+Please note: when the requested info/data is not available on your Anna, the function will return `None`.
+When you encouter an error, please report this via an Issue on this github or on the Home Assistant github.
 
 
 To do:
