@@ -105,13 +105,6 @@ class Haanna(object):
                 if "presets" not in rule_name:
                     result.append(rule_name)
         return result
-            
-            
-            
-            if rule_name != "Thermostat presets":
-                result.append(rule_name)
-
-        return result
 
     def set_schema_state(self, root, schema, state):
         """Sends a set request to the schema with the given name"""
