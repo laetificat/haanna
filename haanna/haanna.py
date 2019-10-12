@@ -65,7 +65,7 @@ class Haanna(object):
         structure
         """
         locator = self.get_rule_id_by_name(root, "Thermostat presets")
-        return root.find(locator) is None
+        return locator is None
 
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
