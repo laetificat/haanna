@@ -93,18 +93,17 @@ class Haanna(object):
 
     def get_schema_names(self, root):
         """Get schemas or schedules available."""
-        schemas = root.findall(".//rule")
-
-        result = []
-        for schema in schemas:
-            rule_name = schema.find("name").text
-            if self.is_legacy_anna(self, root):
-                if "preset" not in rule_name:
-                    result.append(rule_name)
-            else:
+        if self.is_legacy_anna(self, root):
+            return None
+        
+        else:
+            schemas = root.findall(".//rule")
+            result = []
+            for schema in schemas:
+                rule_name = schema.find("name").text
                 if "presets" not in rule_name:
                     result.append(rule_name)
-        return result
+            return result
 
     def set_schema_state(self, root, schema, state):
         """Sends a set request to the schema with the given name"""
@@ -149,8 +148,13 @@ class Haanna(object):
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
         if self.is_legacy_anna(self, root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
+            schemas = root.findall(".//rule")
+            result = []
+            for schema in schemas:
+                rule_name = schema.find("name").text
+                if "presets" not in rule_name:
+                        result.append(rule_name)
+            return result
 
         else:
             locator = "zone_preset_based_on_time_and_presence_with_override"
