@@ -59,17 +59,17 @@ class Haanna(object):
         return Etree.fromstring(r.text)
 
     @staticmethod
-    def is_legacy_anna(root):
+    def is_legacy_anna(self, root):
         """
         Detect Anna legacy version based on different domain_objects
         structure
         """
-        locator = "appliance[type='thermostat']/location"
+        locator = self.get_rule_id_by_name(root, "Thermostat presets")
         return root.find(locator) is None
 
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
-        if self.is_legacy_anna(root):
+        if self.is_legacy_anna(self, root):
             return self.__get_preset_dictionary_v1(root)
         else:
             rule_id = self.get_rule_id_by_template_tag(
@@ -145,7 +145,7 @@ class Haanna(object):
 
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
-        if self.is_legacy_anna(root):
+        if self.is_legacy_anna(self, root):
             # detection for legacy anna not implemented yet, input needed
             return None
 
@@ -195,7 +195,7 @@ class Haanna(object):
 
     def set_preset(self, root, preset):
         """Sets the given preset on the thermostat"""
-        if self.is_legacy_anna(root):
+        if self.is_legacy_anna(self, root):
             return self.__set_preset_v1(root, preset)
         else:
             locator = (
@@ -327,7 +327,7 @@ class Haanna(object):
 
     def get_current_preset(self, root):
         """Gets the current active preset"""
-        if self.is_legacy_anna(root):
+        if self.is_legacy_anna(self, root):
             active_rule = root.find(
                 "rule[active='true']/directives/when/then"
             )
@@ -454,7 +454,7 @@ class Haanna(object):
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
-        if self.is_legacy_anna(root):
+        if self.is_legacy_anna(self, root):
             locator = "appliance[type='thermostat']"
             appliance_id = root.find(locator).attrib["id"]
             return (
