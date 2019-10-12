@@ -169,24 +169,15 @@ class Haanna(object):
         """
         Gets the mode the thermostat is in (active schedule is true or false)
         """
-        if self.is_legacy_anna(root):
-            locator = (
-                "module/services/schedule_state/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
-
-        else:
-            log_type = "schedule_state"
-            locator = (
-                "appliance[type='thermostat']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        log_type = "schedule_state"
+        locator = (
+            "appliance[type='thermostat']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     @staticmethod
     def get_rule_id_by_template_tag(root, rule_name):
@@ -301,51 +292,38 @@ class Haanna(object):
     def get_heating_status(self, root):
         """Gets the active heating status"""
         log_type = "central_heating_state"
-        if self.is_legacy_anna(root):
-            log_type = "boiler_state"
-
-        else:
-            locator = (
-                "appliance[type='heater_central']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        locator = (
+            "appliance[type='heater_central']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     def get_cooling_status(self, root):
         """Gets the active cooling status"""
-        if self.is_legacy_anna(root):
-            return (
-                None
-            )  # cooling not supported on legacy Anna
-        else:
-            log_type = "cooling_state"
-            locator = (
-                "appliance[type='heater_central']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        log_type = "cooling_state"
+        locator = (
+            "appliance[type='heater_central']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
-        if self.is_legacy_anna(root):
-            return None  # dhw not supported on legacy Anna?
-
-        else:
-            log_type = "domestic_hot_water_state"
-            locator = (
-                "appliance[type='heater_central']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        log_type = "domestic_hot_water_state"
+        locator = (
+            "appliance[type='heater_central']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     def get_current_preset(self, root):
         """Gets the current active preset"""
