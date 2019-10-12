@@ -436,57 +436,43 @@ class Haanna(object):
 
     def get_illuminance(self, root):
         """Gets the illuminance value from the thermostat"""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
-
-        else:
-            point_log_id = self.get_point_log_id(
-                root, "illuminance"
+        point_log_id = self.get_point_log_id(
+            root, "illuminance"
+        )
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
             )
-            if point_log_id is not None:
-                measurement = self.get_measurement_from_point_log(
-                    root, point_log_id
-                )
-                value = float(measurement)
-                value = round(value, 1)
-                return value
-            return None
+            value = float(measurement)
+            value = round(value, 1)
+            return value
+        return None
 
     def get_boiler_temperature(self, root):
         """Gets the boiler_temperature value from the thermostat"""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
-
-        else:
-            point_log_id = self.get_point_log_id(
-                root, "boiler_temperature"
+        point_log_id = self.get_point_log_id(
+            root, "boiler_temperature"
+        )
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
             )
-            if point_log_id is not None:
-                measurement = self.get_measurement_from_point_log(
-                    root, point_log_id
-                )
-                value = float(measurement)
-                value = round(value, 1)
-                return value
-            return None
+            value = float(measurement)
+            value = round(value, 1)
+            return value
+        return None
 
     def get_water_pressure(self, root):
         """Gets the water pressure value from the thermostat"""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
-        else:
-            point_log_id = self.get_point_log_id(
-                root, "central_heater_water_pressure"
+        point_log_id = self.get_point_log_id(
+            root, "central_heater_water_pressure"
+        )
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
             )
-            if point_log_id is not None:
-                measurement = self.get_measurement_from_point_log(
-                    root, point_log_id
-                )
-                return float(measurement)
-            return None
+            return float(measurement)
+        return None
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
