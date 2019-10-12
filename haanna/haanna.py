@@ -98,6 +98,16 @@ class Haanna(object):
         result = []
         for schema in schemas:
             rule_name = schema.find("name").text
+            if self.is_legacy_anna(self, root):
+                if "preset" not in rule_name:
+                    result.append(rule_name)
+            else:
+                if "presets" not in rule_name:
+                    result.append(rule_name)
+        return result
+            
+            
+            
             if rule_name != "Thermostat presets":
                 result.append(rule_name)
 
