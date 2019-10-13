@@ -93,25 +93,17 @@ class Haanna(object):
 
     def get_schema_names(self, root):
         """Get schemas or schedules available."""
-        active = self.get_schema_state(root)
         schemas = root.findall(".//rule")
         result = []
-        i = 0
         for schema in schemas:
             rule_name = schema.find("name").text
             if self.is_legacy_anna(self, root):
                 if "preset" not in rule_name:
                     result.append(rule_name)
-                    i +=1
             else:
                 if "presets" not in rule_name:
                     result.append(rule_name)
-                    i +=1
-
-        if (i > 1 and active) or (i == 1 and not active):
-            return result
-        else:
-            return None
+        return result
 
     def set_schema_state(self, root, schema, state):
         """Sends a set request to the schema with the given name"""
@@ -331,15 +323,18 @@ class Haanna(object):
 
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
-        log_type = "domestic_hot_water_state"
-        locator = (
-            "appliance[type='heater_central']/logs/point_log[type='"
-            + log_type
-            + "']/period/measurement"
-        )
-        if root.find(locator) is not None:
-            return root.find(locator).text == "on"
-        return None
+        if self.is_legacy_anna(self, root):
+            return None
+        else:
+            log_type = "domestic_hot_water_state"
+            locator = (
+                "appliance[type='heater_central']/logs/point_log[type='"
+                + log_type
+                + "']/period/measurement"
+            )
+            if root.find(locator) is not None:
+                return root.find(locator).text == "on"
+            return None
 
     def get_current_preset(self, root):
         """Gets the current active preset"""
