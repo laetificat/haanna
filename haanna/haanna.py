@@ -152,7 +152,7 @@ class Haanna(object):
             result = []
             for schema in schemas:
                 rule_name = schema.find("name").text
-                if "presets" not in rule_name:
+                if "preset" not in rule_name:
                         result.append(rule_name)
             if self.get_schema_state(root):
                 return result
