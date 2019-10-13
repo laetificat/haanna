@@ -155,10 +155,7 @@ class Haanna(object):
                 if "preset" not in rule_name:
                     result.append(rule_name)
             result = ''.join(map(str, result))
-            if self.get_schema_state(root):
-                return result
-            else:
-                return None
+            return result
 
         else:
             locator = "zone_preset_based_on_time_and_presence_with_override"
