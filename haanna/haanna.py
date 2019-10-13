@@ -154,6 +154,7 @@ class Haanna(object):
                 rule_name = schema.find("name").text
                 if "preset" not in rule_name:
                     result.append(rule_name)
+            result = ''.join(map(str, result))
             if self.get_schema_state(root):
                 return result
             else:
