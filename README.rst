@@ -51,7 +51,7 @@ Usage
   presets = api.get_presets(domain_objects)
   print(presets)
 
-  # Get the current active preset, can now also be 'none'
+  # Get the current active preset, can also be 'none'
   current_preset = api.get_current_preset(domain_objects)
   print(current_preset)
 
@@ -59,21 +59,20 @@ Usage
   preset = api.set_preset(domain_objects, 'away')
   print(preset)
 
-  # Get operation mode (true = active schedule - false = no active schedules)
+  # Get operation mode (true = active schedule, false = no active schedules)
   # it 'walks' all schedules and sends true if one is active
   mode = api.get_mode(domain_objects)
   print(mode)
 
-  # Get heating status (true = heating is on, flame on display)
+  # Get heating status (true = heating is on, flame-icon on Anna display)
   heating = api.get_heating_status(domain_objects)
   print(heating)
   
-  # Get cooling status (true = cooling is on, fan on display)
-  # Will always return false if cooling is not supported by boiler
+  # Get cooling status (true = cooling is on, fan-icon on Anna display), when available
   cooling = api.get_cooling_status(domain_objects)
   print(cooling)
 
-  # Get domestic hot water status (true = water is being heated, tap on display)
+  # Get domestic hot water status (true = water is being heated, tap-icon on Anna display), when available
   hot_water = api.get_domestic_hot_water_status(domain_objects)
   print(hot_water)
   
@@ -85,7 +84,7 @@ Usage
   boiler_temp = api.get_boiler_temperature(domain_objects)
   print(boiler_temp)
 
-  # Get the current boiler 
+  # Get the current boiler pressure
   pressure = api.get_water_pressure(domain_objects)
   print(pressure)
   
