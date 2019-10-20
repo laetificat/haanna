@@ -20,8 +20,16 @@ ANNA_RULES = "/core/rules"
 
 
 class Haanna(object):
-    def __init__(self, username, password, host, port):
+    def __init__(
+        self,
+        username,
+        password,
+        host,
+        port,
+        legacy_anna=False,
+    ):
         """Constructor for this class"""
+        self.legacy_anna = legacy_anna
         self.set_credentials(username, password)
         self.set_anna_endpoint(
             "http://" + host + ":" + str(port)
@@ -58,18 +66,9 @@ class Haanna(object):
 
         return Etree.fromstring(r.text)
 
-    @staticmethod
-    def is_legacy_anna(self, root):
-        """
-        Detect Anna legacy version based on different domain_objects
-        structure
-        """
-        locator = self.get_rule_id_by_name(root, "Thermostat presets")
-        return locator is None
-
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
-        if self.is_legacy_anna(self, root):
+        if self.legacy_anna:
             return self.__get_preset_dictionary_v1(root)
         else:
             rule_id = self.get_rule_id_by_template_tag(
@@ -97,12 +96,13 @@ class Haanna(object):
         result = []
         for schema in schemas:
             rule_name = schema.find("name").text
-            if self.is_legacy_anna(self, root):
-                if "preset" not in rule_name:
-                    result.append(rule_name)
-            else:
-                if "presets" not in rule_name:
-                    result.append(rule_name)
+            if rule_name is not None:
+                if self.legacy_anna:
+                    if "preset" not in rule_name:
+                        result.append(rule_name)
+                else:
+                    if "presets" not in rule_name:
+                        result.append(rule_name)
         return result
 
     def set_schema_state(self, root, schema, state):
@@ -147,14 +147,14 @@ class Haanna(object):
 
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
-        if self.is_legacy_anna(self, root):
+        if self.legacy_anna:
             schemas = root.findall(".//rule")
             result = []
             for schema in schemas:
                 rule_name = schema.find("name").text
                 if "preset" not in rule_name:
                     result.append(rule_name)
-            result = ''.join(map(str, result))
+            result = "".join(map(str, result))
             return result
 
         else:
@@ -203,7 +203,7 @@ class Haanna(object):
 
     def set_preset(self, root, preset):
         """Sets the given preset on the thermostat"""
-        if self.is_legacy_anna(self, root):
+        if self.legacy_anna:
             return self.__set_preset_v1(root, preset)
         else:
             locator = (
@@ -323,7 +323,7 @@ class Haanna(object):
 
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
-        if self.is_legacy_anna(self, root):
+        if self.legacy_anna:
             return None
         else:
             log_type = "domestic_hot_water_state"
@@ -338,7 +338,7 @@ class Haanna(object):
 
     def get_current_preset(self, root):
         """Gets the current active preset"""
-        if self.is_legacy_anna(self, root):
+        if self.legacy_anna:
             active_rule = root.find(
                 "rule[active='true']/directives/when/then"
             )
@@ -465,7 +465,7 @@ class Haanna(object):
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
-        if self.is_legacy_anna(self, root):
+        if self.legacy_anna:
             locator = "appliance[type='thermostat']"
             appliance_id = root.find(locator).attrib["id"]
             return (
@@ -527,10 +527,6 @@ class Haanna(object):
         global PASSWORD
         USERNAME = username
         PASSWORD = password
-
-    @staticmethod
-    def get_credentials():
-        return {"username": USERNAME, "password": PASSWORD}
 
     @staticmethod
     def set_anna_endpoint(endpoint):
