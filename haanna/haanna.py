@@ -20,8 +20,16 @@ ANNA_RULES = "/core/rules"
 
 
 class Haanna(object):
-    def __init__(self, username, password, host, port):
+    def __init__(
+        self,
+        username,
+        password,
+        host,
+        port,
+        legacy_anna=False,
+    ):
         """Constructor for this class"""
+        self.legacy_anna = legacy_anna
         self.set_credentials(username, password)
         self.set_anna_endpoint(
             "http://" + host + ":" + str(port)
@@ -58,18 +66,9 @@ class Haanna(object):
 
         return Etree.fromstring(r.text)
 
-    @staticmethod
-    def is_legacy_anna(root):
-        """
-        Detect Anna legacy version based on different domain_objects
-        structure
-        """
-        locator = "appliance[type='thermostat']/location"
-        return root.find(locator) is None
-
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
-        if self.is_legacy_anna(root):
+        if self.legacy_anna:
             return self.__get_preset_dictionary_v1(root)
         else:
             rule_id = self.get_rule_id_by_template_tag(
@@ -94,13 +93,16 @@ class Haanna(object):
     def get_schema_names(self, root):
         """Get schemas or schedules available."""
         schemas = root.findall(".//rule")
-
         result = []
         for schema in schemas:
             rule_name = schema.find("name").text
-            if rule_name != "Thermostat presets":
-                result.append(rule_name)
-
+            if rule_name is not None:
+                if self.legacy_anna:
+                    if "preset" not in rule_name:
+                        result.append(rule_name)
+                else:
+                    if "presets" not in rule_name:
+                        result.append(rule_name)
         return result
 
     def set_schema_state(self, root, schema, state):
@@ -145,9 +147,15 @@ class Haanna(object):
 
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
+        if self.legacy_anna:
+            schemas = root.findall(".//rule")
+            result = []
+            for schema in schemas:
+                rule_name = schema.find("name").text
+                if "preset" not in rule_name:
+                    result.append(rule_name)
+            result = "".join(map(str, result))
+            return result
 
         else:
             locator = "zone_preset_based_on_time_and_presence_with_override"
@@ -169,24 +177,15 @@ class Haanna(object):
         """
         Gets the mode the thermostat is in (active schedule is true or false)
         """
-        if self.is_legacy_anna(root):
-            locator = (
-                "module/services/schedule_state/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
-
-        else:
-            log_type = "schedule_state"
-            locator = (
-                "appliance[type='thermostat']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        log_type = "schedule_state"
+        locator = (
+            "appliance[type='thermostat']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     @staticmethod
     def get_rule_id_by_template_tag(root, rule_name):
@@ -204,7 +203,7 @@ class Haanna(object):
 
     def set_preset(self, root, preset):
         """Sets the given preset on the thermostat"""
-        if self.is_legacy_anna(root):
+        if self.legacy_anna:
             return self.__set_preset_v1(root, preset)
         else:
             locator = (
@@ -301,41 +300,31 @@ class Haanna(object):
     def get_heating_status(self, root):
         """Gets the active heating status"""
         log_type = "central_heating_state"
-        if self.is_legacy_anna(root):
-            log_type = "boiler_state"
-
-        else:
-            locator = (
-                "appliance[type='heater_central']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        locator = (
+            "appliance[type='heater_central']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     def get_cooling_status(self, root):
         """Gets the active cooling status"""
-        if self.is_legacy_anna(root):
-            return (
-                None
-            )  # cooling not supported on legacy Anna
-        else:
-            log_type = "cooling_state"
-            locator = (
-                "appliance[type='heater_central']/logs/point_log[type='"
-                + log_type
-                + "']/period/measurement"
-            )
-            if root.find(locator) is not None:
-                return root.find(locator).text == "on"
-            return None
+        log_type = "cooling_state"
+        locator = (
+            "appliance[type='heater_central']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
 
     def get_domestic_hot_water_status(self, root):
         """Gets the domestic hot water status"""
-        if self.is_legacy_anna(root):
-            return None  # dhw not supported on legacy Anna?
-
+        if self.legacy_anna:
+            return None
         else:
             log_type = "domestic_hot_water_state"
             locator = (
@@ -349,7 +338,7 @@ class Haanna(object):
 
     def get_current_preset(self, root):
         """Gets the current active preset"""
-        if self.is_legacy_anna(root):
+        if self.legacy_anna:
             active_rule = root.find(
                 "rule[active='true']/directives/when/then"
             )
@@ -436,61 +425,47 @@ class Haanna(object):
 
     def get_illuminance(self, root):
         """Gets the illuminance value from the thermostat"""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
-
-        else:
-            point_log_id = self.get_point_log_id(
-                root, "illuminance"
+        point_log_id = self.get_point_log_id(
+            root, "illuminance"
+        )
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
             )
-            if point_log_id is not None:
-                measurement = self.get_measurement_from_point_log(
-                    root, point_log_id
-                )
-                value = float(measurement)
-                value = round(value, 1)
-                return value
-            return None
+            value = float(measurement)
+            value = round(value, 1)
+            return value
+        return None
 
     def get_boiler_temperature(self, root):
         """Gets the boiler_temperature value from the thermostat"""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
-
-        else:
-            point_log_id = self.get_point_log_id(
-                root, "boiler_temperature"
+        point_log_id = self.get_point_log_id(
+            root, "boiler_temperature"
+        )
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
             )
-            if point_log_id is not None:
-                measurement = self.get_measurement_from_point_log(
-                    root, point_log_id
-                )
-                value = float(measurement)
-                value = round(value, 1)
-                return value
-            return None
+            value = float(measurement)
+            value = round(value, 1)
+            return value
+        return None
 
     def get_water_pressure(self, root):
         """Gets the water pressure value from the thermostat"""
-        if self.is_legacy_anna(root):
-            # detection for legacy anna not implemented yet, input needed
-            return None
-        else:
-            point_log_id = self.get_point_log_id(
-                root, "central_heater_water_pressure"
+        point_log_id = self.get_point_log_id(
+            root, "central_heater_water_pressure"
+        )
+        if point_log_id is not None:
+            measurement = self.get_measurement_from_point_log(
+                root, point_log_id
             )
-            if point_log_id is not None:
-                measurement = self.get_measurement_from_point_log(
-                    root, point_log_id
-                )
-                return float(measurement)
-            return None
+            return float(measurement)
+        return None
 
     def __get_temperature_uri(self, root):
         """Determine the set_temperature uri for different versions of Anna"""
-        if self.is_legacy_anna(root):
+        if self.legacy_anna:
             locator = "appliance[type='thermostat']"
             appliance_id = root.find(locator).attrib["id"]
             return (
@@ -552,10 +527,6 @@ class Haanna(object):
         global PASSWORD
         USERNAME = username
         PASSWORD = password
-
-    @staticmethod
-    def get_credentials():
-        return {"username": USERNAME, "password": PASSWORD}
 
     @staticmethod
     def set_anna_endpoint(endpoint):
