@@ -370,7 +370,8 @@ class Haanna(object):
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
-            return float(measurement)
+            if measurement:
+                return float(measurement)
         return None
 
     def get_current_temperature(self, root):
