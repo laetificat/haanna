@@ -96,7 +96,7 @@ class Haanna(object):
         result = []
         for schema in schemas:
             rule_name = schema.find("name").text
-            if rule_name is not None:
+            if rule_name:
                 if self.legacy_anna:
                     if "preset" not in rule_name:
                         result.append(rule_name)
@@ -184,7 +184,7 @@ class Haanna(object):
             + log_type
             + "']/period/measurement"
         )
-        if root.find(locator) is not None:
+        if root.find(locator):
             return root.find(locator).text == "on"
         return None
 
@@ -307,7 +307,7 @@ class Haanna(object):
             + log_type
             + "']/period/measurement"
         )
-        if root.find(locator) is not None:
+        if root.find(locator):
             return root.find(locator).text == "on"
         return None
 
@@ -319,7 +319,7 @@ class Haanna(object):
             + log_type
             + "']/period/measurement"
         )
-        if root.find(locator) is not None:
+        if root.find(locator):
             return root.find(locator).text == "on"
         return None
 
@@ -334,7 +334,7 @@ class Haanna(object):
                 + log_type
                 + "']/period/measurement"
             )
-            if root.find(locator) is not None:
+            if root.find(locator):
                 return root.find(locator).text == "on"
             return None
 
@@ -368,7 +368,7 @@ class Haanna(object):
         point_log_id = self.get_point_log_id(
             root, "schedule_temperature"
         )
-        if point_log_id is not None:
+        if point_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
@@ -381,7 +381,7 @@ class Haanna(object):
         current_temp_point_log_id = self.get_point_log_id(
             root, "temperature"
         )
-        if current_temp_point_log_id is not None:
+        if current_temp_point_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, current_temp_point_log_id
             )
@@ -393,7 +393,7 @@ class Haanna(object):
         target_temp_log_id = self.get_point_log_id(
             root, "target_temperature"
         )
-        if target_temp_log_id is not None:
+        if target_temp_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, target_temp_log_id
             )
@@ -405,7 +405,7 @@ class Haanna(object):
         thermostat_log_id = self.get_point_log_id(
             root, "thermostat"
         )
-        if thermostat_log_id is not None:
+        if thermostat_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, thermostat_log_id
             )
@@ -417,7 +417,7 @@ class Haanna(object):
         outdoor_temp_log_id = self.get_point_log_id(
             root, "outdoor_temperature"
         )
-        if outdoor_temp_log_id is not None:
+        if outdoor_temp_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, outdoor_temp_log_id
             )
@@ -431,7 +431,7 @@ class Haanna(object):
         point_log_id = self.get_point_log_id(
             root, "illuminance"
         )
-        if point_log_id is not None:
+        if point_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
@@ -445,7 +445,7 @@ class Haanna(object):
         point_log_id = self.get_point_log_id(
             root, "boiler_temperature"
         )
-        if point_log_id is not None:
+        if point_log_id is:
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
@@ -459,7 +459,7 @@ class Haanna(object):
         point_log_id = self.get_point_log_id(
             root, "central_heater_water_pressure"
         )
-        if point_log_id is not None:
+        if point_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
@@ -549,7 +549,7 @@ class Haanna(object):
             + log_type
             + "']/functionalities/point_log"
         )
-        if root.find(locator) is not None:
+        if root.find(locator):
             return root.find(locator).attrib["id"]
         return None
 
@@ -561,7 +561,7 @@ class Haanna(object):
             + point_log_id
             + "']/period/measurement"
         )
-        if root.find(locator) is not None:
+        if root.find(locator):
             return root.find(locator).text
         return None
 
@@ -630,7 +630,6 @@ class Haanna(object):
     @staticmethod
     def get_active_name(root, schema_ids):
         """Gets the active schema from a (list of) rule id(s)"""
-        active = None
         schemas = {}
         for schema_id in schema_ids:
             locator = root.find(
@@ -642,34 +641,8 @@ class Haanna(object):
                     "rule[@id='" + schema_id + "']/name"
                 ).text
                 return active
-                break
-            if locator.text == "false":
-                schema_name = root.find(
-                    "rule[@id='" + schema_id + "']/name"
-                ).text
-                schema_date = root.find(
-                    "rule[@id='"
-                    + schema_id
-                    + "']/modified_date"
-                ).text
-                # Python 3.6 fix (%z %Z issue)
-                corrected = re.sub(
-                    r"([-+]\d{2}):(\d{2})(?:(\d{2}))?$",
-                    r"\1\2\3",
-                    schema_date,
-                )
-                schema_time = datetime.datetime.strptime(
-                    corrected, date_format
-                )
-                schemas[schema_name] = (
-                    schema_time - epoch
-                ).total_seconds()
-        if active is None:
-            last_modified = sorted(
-                schemas.items(), key=lambda kv: kv[1]
-            )[-1][0]
-            return last_modified
-
+            else:
+                return None
 
 class AnnaException(Exception):
     def __init__(self, arg1, arg2=None):
