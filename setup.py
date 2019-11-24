@@ -15,6 +15,6 @@ setup(
     author_email='k.heruer@gmail.com',
     license='MIT',
     packages=['haanna'],
-    install_requires=['requests','datetime','pytz'],
+    install_requires=['requests'],
     zip_safe=False
 )
