@@ -184,7 +184,7 @@ class Haanna(object):
             + log_type
             + "']/period/measurement"
         )
-        if root.find(locator):
+        if root.find(locator) is not None:
             return root.find(locator).text == "on"
         return None
 
@@ -307,7 +307,7 @@ class Haanna(object):
             + log_type
             + "']/period/measurement"
         )
-        if root.find(locator):
+        if root.find(locator) is not None:
             return root.find(locator).text == "on"
         return None
 
@@ -319,7 +319,7 @@ class Haanna(object):
             + log_type
             + "']/period/measurement"
         )
-        if root.find(locator):
+        if root.find(locator) is not None:
             return root.find(locator).text == "on"
         return None
 
@@ -334,7 +334,7 @@ class Haanna(object):
                 + log_type
                 + "']/period/measurement"
             )
-            if root.find(locator):
+            if root.find(locator) is not None:
                 return root.find(locator).text == "on"
             return None
 
@@ -549,7 +549,7 @@ class Haanna(object):
             + log_type
             + "']/functionalities/point_log"
         )
-        if root.find(locator):
+        if root.find(locator) is not None:
             return root.find(locator).attrib["id"]
         return None
 
@@ -561,7 +561,7 @@ class Haanna(object):
             + point_log_id
             + "']/period/measurement"
         )
-        if root.find(locator):
+        if root.find(locator) is not None:
             return root.find(locator).text
         return None
 
