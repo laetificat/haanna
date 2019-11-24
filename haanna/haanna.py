@@ -445,7 +445,7 @@ class Haanna(object):
         point_log_id = self.get_point_log_id(
             root, "boiler_temperature"
         )
-        if point_log_id is:
+        if point_log_id:
             measurement = self.get_measurement_from_point_log(
                 root, point_log_id
             )
