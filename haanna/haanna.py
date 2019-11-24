@@ -103,6 +103,8 @@ class Haanna(object):
                 else:
                     if "presets" not in rule_name:
                         result.append(rule_name)
+        if result == []:
+            return None
         return result
 
     def set_schema_state(self, root, schema, state):
@@ -155,6 +157,8 @@ class Haanna(object):
                 if "preset" not in rule_name:
                     result.append(rule_name)
             result = "".join(map(str, result))
+            if result == []:
+                return None
             return result
 
         else:
@@ -162,16 +166,13 @@ class Haanna(object):
             rule_id = self.get_rule_id_by_template_tag(
                 root, locator
             )
-
             if rule_id is None:
-                raise RuleIdNotFoundException(
-                    "Could not find the rule id."
+                return None
+            else:
+                schema_active = self.get_active_name(
+                    root, rule_id
                 )
-
-            schema_active = self.get_active_name(
-                root, rule_id
-            )
-            return schema_active
+                return schema_active
 
     def get_schema_state(self, root):
         """
@@ -198,7 +199,8 @@ class Haanna(object):
                 == rule_name
             ):
                 schema_ids.append(rule.attrib["id"])
-
+        if schema_ids == []:
+            return None
         return schema_ids
 
     def set_preset(self, root, preset):
@@ -630,10 +632,6 @@ class Haanna(object):
         """Gets the active schema from a (list of) rule id(s)"""
         active = None
         schemas = {}
-        epoch = datetime.datetime(
-            1970, 1, 1, tzinfo=pytz.utc
-        )
-        date_format = "%Y-%m-%dT%H:%M:%S.%f%z"
         for schema_id in schema_ids:
             locator = root.find(
                 "rule[@id='" + schema_id + "']/active"
