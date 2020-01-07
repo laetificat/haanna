@@ -7,9 +7,6 @@ import xml.etree.cElementTree as Etree
 # For python 3.6 strptime fix
 import re
 
-USERNAME = ""
-PASSWORD = ""
-ANNA_ENDPOINT = ""
 ANNA_PING_ENDPOINT = "/ping"
 ANNA_DOMAIN_OBJECTS_ENDPOINT = "/core/domain_objects"
 ANNA_LOCATIONS_ENDPOINT = "/core/locations"
@@ -28,17 +25,16 @@ class Haanna(object):
     ):
         """Constructor for this class"""
         self.legacy_anna = legacy_anna
-        self.set_credentials(username, password)
-        self.set_anna_endpoint(
-            "http://" + host + ":" + str(port)
-        )
+        self._username = username
+        self._password = password
+        self._endpoint = "http://" + host + ":" + str(port)
 
     @staticmethod
-    def ping_anna_thermostat():
+    def ping_anna_thermostat(self):
         """Ping the thermostat to see if it's online"""
         r = requests.get(
-            ANNA_ENDPOINT + ANNA_PING_ENDPOINT,
-            auth=(USERNAME, PASSWORD),
+            self._endpoint + ANNA_PING_ENDPOINT,
+            auth=(self._username, self._password),
             timeout=10,
         )
 
@@ -50,10 +46,10 @@ class Haanna(object):
         return True
 
     @staticmethod
-    def get_domain_objects():
+    def get_domain_objects(self):
         r = requests.get(
-            ANNA_ENDPOINT + ANNA_DOMAIN_OBJECTS_ENDPOINT,
-            auth=(USERNAME, PASSWORD),
+            self._endpoint + ANNA_DOMAIN_OBJECTS_ENDPOINT,
+            auth=(self._username, self._password),
             timeout=10,
         )
 
@@ -128,8 +124,8 @@ class Haanna(object):
         )
 
         r = requests.put(
-            ANNA_ENDPOINT + uri,
-            auth=(USERNAME, PASSWORD),
+            self._anna_endpoint + uri,
+            auth=(self._username, self._password),
             data=data,
             headers={"Content-Type": "text/xml"},
             timeout=10,
@@ -187,7 +183,7 @@ class Haanna(object):
         return None
 
     @staticmethod
-    def get_rule_id_by_template_tag(root, rule_name):
+    def get_rule_id_by_template_tag(self, root, rule_name):
         """Gets the rule ID based on template_tag"""
         schema_ids = []
         rules = root.findall("rule")
@@ -213,8 +209,8 @@ class Haanna(object):
 
             locations_root = Etree.fromstring(
                 requests.get(
-                    ANNA_ENDPOINT + ANNA_LOCATIONS_ENDPOINT,
-                    auth=(USERNAME, PASSWORD),
+                    self._anna_endpoint + ANNA_LOCATIONS_ENDPOINT,
+                    auth=(self._username, self._password),
                     timeout=10,
                 ).text
             )
@@ -230,11 +226,11 @@ class Haanna(object):
             ).text
 
             r = requests.put(
-                ANNA_ENDPOINT
+                self._anna_endpoint
                 + ANNA_LOCATIONS_ENDPOINT
                 + ";id="
                 + location_id,
-                auth=(USERNAME, PASSWORD),
+                auth=(self._username, self._password),
                 data="<locations>"
                 + '<location id="'
                 + location_id
@@ -262,7 +258,7 @@ class Haanna(object):
             return r.text
 
     @staticmethod
-    def __set_preset_v1(root, preset):
+    def __set_preset_v1(self, root, preset):
         """Sets the given preset on the thermostat for V1"""
         locator = (
             "rule/directives/when/then[@icon='"
@@ -278,8 +274,8 @@ class Haanna(object):
         else:
             rule_id = rule.attrib["id"]
             r = requests.put(
-                ANNA_ENDPOINT + ANNA_RULES,
-                auth=(USERNAME, PASSWORD),
+                self._anna_endpoint + ANNA_RULES,
+                auth=(self._username, self._password),
                 data="<rules>"
                 + '<rule id="'
                 + rule_id
@@ -505,8 +501,8 @@ class Haanna(object):
         temperature = str(temperature)
 
         r = requests.put(
-            ANNA_ENDPOINT + uri,
-            auth=(USERNAME, PASSWORD),
+            self._anna_endpoint + uri,
+            auth=(self._username, self._password),
             data="<thermostat_functionality><setpoint>"
             + temperature
             + "</setpoint></thermostat_functionality>",
@@ -521,26 +517,10 @@ class Haanna(object):
 
         return r.text
 
-    @staticmethod
-    def set_credentials(username, password):
-        """Sets the username and password variables"""
-        global USERNAME
-        global PASSWORD
-        USERNAME = username
-        PASSWORD = password
+    def get_anna_endpoint(self):
+        return self._anna_endpoint
 
-    @staticmethod
-    def set_anna_endpoint(endpoint):
-        """Sets the endpoint where the Anna resides on the network"""
-        global ANNA_ENDPOINT
-        ANNA_ENDPOINT = endpoint
-
-    @staticmethod
-    def get_anna_endpoint():
-        return ANNA_ENDPOINT
-
-    @staticmethod
-    def get_point_log_id(root, log_type):
+    def get_point_log_id(self, root, log_type):
         """Gets the point log ID based on log type"""
         locator = (
             "module/services/*[@log_type='"
@@ -551,8 +531,7 @@ class Haanna(object):
             return root.find(locator).attrib["id"]
         return None
 
-    @staticmethod
-    def get_measurement_from_point_log(root, point_log_id):
+    def get_measurement_from_point_log(self, root, point_log_id):
         """Gets the measurement from a point log based on point log ID"""
         locator = (
             "*/logs/point_log[@id='"
@@ -563,7 +542,6 @@ class Haanna(object):
             return root.find(locator).text
         return None
 
-    @staticmethod
     def get_rule_id_by_name(root, rule_name):
         """Gets the rule ID based on name"""
         rules = root.findall("rule")
@@ -571,8 +549,7 @@ class Haanna(object):
             if rule.find("name").text == rule_name:
                 return rule.attrib["id"]
 
-    @staticmethod
-    def get_preset_dictionary(root, rule_id):
+    def get_preset_dictionary(self, root, rule_id):
         """
         Gets the presets from a rule based on rule ID and returns a dictionary
         with all the key-value pairs
@@ -589,8 +566,7 @@ class Haanna(object):
             )
         return preset_dictionary
 
-    @staticmethod
-    def __get_preset_dictionary_v1(root):
+    def __get_preset_dictionary_v1(self, root):
         """
         Gets the presets and returns a dictionary with all the key-value pairs
         Example output: {'away': 17.0, 'home': 20.0, 'vacation': 15.0,
@@ -610,8 +586,7 @@ class Haanna(object):
                 ] = float(directive.attrib["temperature"])
         return preset_dictionary
 
-    @staticmethod
-    def get_active_mode(root, schema_ids):
+    def get_active_mode(self, root, schema_ids):
         """Gets the mode from a (list of) rule id(s)"""
         active = False
         for schema_id in schema_ids:
@@ -625,8 +600,7 @@ class Haanna(object):
                 break
         return active
 
-    @staticmethod
-    def get_active_name(root, schema_ids):
+    def get_active_name(self, root, schema_ids):
         """Gets the active schema from a (list of) rule id(s)"""
         schemas = {}
         for schema_id in schema_ids:
@@ -656,7 +630,7 @@ class RuleIdNotFoundException(AnnaException):
     """
 
     pass
-
+Inclu
 
 class CouldNotSetPresetException(AnnaException):
     """Raise an exception for when the preset can not be set"""
