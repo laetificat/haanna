@@ -29,7 +29,6 @@ class Haanna(object):
         self._password = password
         self._endpoint = "http://" + host + ":" + str(port)
 
-    @staticmethod
     def ping_anna_thermostat(self):
         """Ping the thermostat to see if it's online"""
         r = requests.get(
@@ -45,7 +44,6 @@ class Haanna(object):
 
         return True
 
-    @staticmethod
     def get_domain_objects(self):
         r = requests.get(
             self._endpoint + ANNA_DOMAIN_OBJECTS_ENDPOINT,
@@ -182,7 +180,6 @@ class Haanna(object):
             return root.find(locator).text == "on"
         return None
 
-    @staticmethod
     def get_rule_id_by_template_tag(self, root, rule_name):
         """Gets the rule ID based on template_tag"""
         schema_ids = []
@@ -257,7 +254,6 @@ class Haanna(object):
                 )
             return r.text
 
-    @staticmethod
     def __set_preset_v1(self, root, preset):
         """Sets the given preset on the thermostat for V1"""
         locator = (
