@@ -566,7 +566,8 @@ class Haanna(object):
             return root.find(locator).text
         return None
 
-    def get_rule_id_by_name(self, root, rule_name):
+    @staticmethod
+    def get_rule_id_by_name(root, rule_name):
         """Gets the rule ID based on name"""
         rules = root.findall("rule")
         for rule in rules:
