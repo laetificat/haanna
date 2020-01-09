@@ -304,8 +304,20 @@ class Haanna(object):
                 )
             return r.text
 
+    def get_boiler_status(self, root):
+        """Gets the active boiler-heating status (On-Off control)"""
+        log_type = "boiler_state"
+        locator = (
+            "appliance[type='heater_central']/logs/point_log[type='"
+            + log_type
+            + "']/period/measurement"
+        )
+        if root.find(locator) is not None:
+            return root.find(locator).text == "on"
+        return None
+
     def get_heating_status(self, root):
-        """Gets the active heating status"""
+        """Gets the active heating status (OpenTherm control)"""
         log_type = "central_heating_state"
         locator = (
             "appliance[type='heater_central']/logs/point_log[type='"
