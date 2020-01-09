@@ -9,6 +9,7 @@ import re
 
 ANNA_PING_ENDPOINT = "/ping"
 ANNA_DIRECT_OBJECTS_ENDPOINT = "/core/direct_objects"
+ANNA_DOMAIN_OBJECTS_ENDPOINT = "/core/domain_objects"
 ANNA_LOCATIONS_ENDPOINT = "/core/locations"
 ANNA_APPLIANCES = "/core/appliances"
 ANNA_RULES = "/core/rules"
@@ -43,6 +44,20 @@ class Haanna(object):
             )
 
         return True
+
+    def get_domain_objects(self):
+        r = requests.get(
+            self._endpoint + ANNA_DOMAIN_OBJECTS_ENDPOINT,
+            auth=(self._username, self._password),
+            timeout=10,
+        )
+
+        if r.status_code != requests.codes.ok:
+            raise ConnectionError(
+                "Could not get the domain objects."
+            )
+
+        return Etree.fromstring(r.text)
 
     def get_direct_objects(self):
         r = requests.get(
