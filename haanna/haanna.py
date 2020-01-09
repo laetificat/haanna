@@ -116,13 +116,13 @@ class Haanna(object):
 
     def set_schema_state(self, root, schema, state):
         """Sends a set request to the schema with the given name"""
+        global template_id
         schema_rule_id = self.get_rule_id_by_name(
             root, str(schema)
         )
         templates = root.findall(
             ".//*[@id='{}']/template".format(schema_rule_id)
         )
-        template_id = []
         for rule in templates:
             template_id = rule.attrib["id"]
 
