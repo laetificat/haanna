@@ -59,20 +59,6 @@ class Haanna(object):
 
         return Etree.fromstring(r.text)
 
-    def get_direct_objects(self):
-        r = requests.get(
-            self._endpoint + ANNA_DIRECT_OBJECTS_ENDPOINT,
-            auth=(self._username, self._password),
-            timeout=10,
-        )
-
-        if r.status_code != requests.codes.ok:
-            raise ConnectionError(
-                "Could not get the direct objects."
-            )
-
-        return Etree.fromstring(r.text)
-
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
         if self.legacy_anna:
