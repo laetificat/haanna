@@ -122,7 +122,7 @@ class Haanna(object):
         templates = root.findall(
             ".//*[@id='{}']/template".format(schema_rule_id)
         )
-        template_id = None
+        template_id = []
         for rule in templates:
             template_id = rule.attrib["id"]
 
