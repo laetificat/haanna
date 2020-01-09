@@ -122,7 +122,7 @@ class Haanna(object):
         )
 
         r = requests.put(
-            self._anna_endpoint + uri,
+            self._endpoint + uri,
             auth=(self._username, self._password),
             data=data,
             headers={"Content-Type": "text/xml"},
@@ -206,7 +206,7 @@ class Haanna(object):
 
             locations_root = Etree.fromstring(
                 requests.get(
-                    self._anna_endpoint + ANNA_LOCATIONS_ENDPOINT,
+                    self._endpoint + ANNA_LOCATIONS_ENDPOINT,
                     auth=(self._username, self._password),
                     timeout=10,
                 ).text
@@ -223,7 +223,7 @@ class Haanna(object):
             ).text
 
             r = requests.put(
-                self._anna_endpoint
+                self._endpoint
                 + ANNA_LOCATIONS_ENDPOINT
                 + ";id="
                 + location_id,
@@ -270,7 +270,7 @@ class Haanna(object):
         else:
             rule_id = rule.attrib["id"]
             r = requests.put(
-                self._anna_endpoint + ANNA_RULES,
+                self._endpoint + ANNA_RULES,
                 auth=(self._username, self._password),
                 data="<rules>"
                 + '<rule id="'
@@ -497,7 +497,7 @@ class Haanna(object):
         temperature = str(temperature)
 
         r = requests.put(
-            self._anna_endpoint + uri,
+            self._endpoint + uri,
             auth=(self._username, self._password),
             data="<thermostat_functionality><setpoint>"
             + temperature
@@ -514,7 +514,7 @@ class Haanna(object):
         return r.text
 
     def get_anna_endpoint(self):
-        return self._anna_endpoint
+        return self._endpoint
 
     def get_point_log_id(self, root, log_type):
         """Gets the point log ID based on log type"""
