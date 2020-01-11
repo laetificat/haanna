@@ -115,18 +115,14 @@ class Haanna(object):
         )
         template_id = None
         for rule in templates:
-            template_id = rule.attrib["id"]
+            template_id = rule.attrib['id']
 
-        uri = "{};id={}".format(ANNA_RULES, schema_rule_id)
+        uri = '{};id={}'.format(ANNA_RULES, schema_rule_id)
 
         state = str(state)
-        data = (
-            '<rules><rule id="{}"><name><![CDATA[{}]]></name>'
-            '<template id="{}" /><active>{}</active></rule>'
-            "</rules>".format(
-                schema_rule_id, schema, template_id, state
-            )
-        )
+        data = '<rules><rule id="{}"><name><![CDATA[{}]]></name>' \
+               '<template id="{}" /><active>{}</active></rule>' \
+               "</rules>".format(schema_rule_id, schema, template_id, state)
 
         r = requests.put(
             ANNA_ENDPOINT + uri,
