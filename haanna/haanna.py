@@ -9,9 +9,6 @@ import xml.etree.cElementTree as Etree
 # For python 3.6 strptime fix
 import re
 
-USERNAME = ""
-PASSWORD = ""
-ANNA_ENDPOINT = ""
 ANNA_PING_ENDPOINT = "/ping"
 ANNA_DOMAIN_OBJECTS_ENDPOINT = "/core/domain_objects"
 ANNA_LOCATIONS_ENDPOINT = "/core/locations"
@@ -30,17 +27,15 @@ class Haanna(object):
     ):
         """Constructor for this class"""
         self.legacy_anna = legacy_anna
-        self.set_credentials(username, password)
-        self.set_anna_endpoint(
-            "http://" + host + ":" + str(port)
-        )
+        self._username = username
+        self._password = password
+        self._endpoint = "http://" + host + ":" + str(port)
 
-    @staticmethod
-    def ping_anna_thermostat():
+    def ping_anna_thermostat(self):
         """Ping the thermostat to see if it's online"""
         r = requests.get(
-            ANNA_ENDPOINT + ANNA_PING_ENDPOINT,
-            auth=(USERNAME, PASSWORD),
+            self._endpoint + ANNA_PING_ENDPOINT,
+            auth=(self._username, self._password),
             timeout=10,
         )
 
@@ -51,11 +46,10 @@ class Haanna(object):
 
         return True
 
-    @staticmethod
-    def get_domain_objects():
+    def get_domain_objects(self):
         r = requests.get(
-            ANNA_ENDPOINT + ANNA_DOMAIN_OBJECTS_ENDPOINT,
-            auth=(USERNAME, PASSWORD),
+            self._endpoint + ANNA_DOMAIN_OBJECTS_ENDPOINT,
+            auth=(self._username, self._password),
             timeout=10,
         )
 
@@ -127,8 +121,8 @@ class Haanna(object):
                '</rules>'.format(schema_rule_id, schema, template_id, state)
 
         r = requests.put(
-            ANNA_ENDPOINT + uri,
-            auth=(USERNAME, PASSWORD),
+            self._endpoint + uri,
+            auth=(self._username, self._password),
             data=data,
             headers={'Content-Type': 'text/xml'},
             timeout=10
@@ -212,8 +206,8 @@ class Haanna(object):
 
             locations_root = Etree.fromstring(
                 requests.get(
-                    ANNA_ENDPOINT + ANNA_LOCATIONS_ENDPOINT,
-                    auth=(USERNAME, PASSWORD),
+                    self._endpoint + ANNA_LOCATIONS_ENDPOINT,
+                    auth=(self._username, self._password),
                     timeout=10,
                 ).text
             )
@@ -229,11 +223,11 @@ class Haanna(object):
             ).text
 
             r = requests.put(
-                ANNA_ENDPOINT
+                self._endpoint
                 + ANNA_LOCATIONS_ENDPOINT
                 + ";id="
                 + location_id,
-                auth=(USERNAME, PASSWORD),
+                auth=(self._username, self._password),
                 data="<locations>"
                 + '<location id="'
                 + location_id
@@ -260,8 +254,7 @@ class Haanna(object):
                 )
             return r.text
 
-    @staticmethod
-    def __set_preset_v1(root, preset):
+    def __set_preset_v1(self, root, preset):
         """Sets the given preset on the thermostat for V1"""
         locator = (
             "rule/directives/when/then[@icon='"
@@ -277,8 +270,8 @@ class Haanna(object):
         else:
             rule_id = rule.attrib["id"]
             r = requests.put(
-                ANNA_ENDPOINT + ANNA_RULES,
-                auth=(USERNAME, PASSWORD),
+                self._endpoint + ANNA_RULES,
+                auth=(self._username, self._password),
                 data="<rules>"
                 + '<rule id="'
                 + rule_id
@@ -504,8 +497,8 @@ class Haanna(object):
         temperature = str(temperature)
 
         r = requests.put(
-            ANNA_ENDPOINT + uri,
-            auth=(USERNAME, PASSWORD),
+            self._endpoint + uri,
+            auth=(self._username, self._password),
             data="<thermostat_functionality><setpoint>"
             + temperature
             + "</setpoint></thermostat_functionality>",
@@ -519,24 +512,9 @@ class Haanna(object):
             )
 
         return r.text
-
-    @staticmethod
-    def set_credentials(username, password):
-        """Sets the username and password variables"""
-        global USERNAME
-        global PASSWORD
-        USERNAME = username
-        PASSWORD = password
-
-    @staticmethod
-    def set_anna_endpoint(endpoint):
-        """Sets the endpoint where the Anna resides on the network"""
-        global ANNA_ENDPOINT
-        ANNA_ENDPOINT = endpoint
-
-    @staticmethod
-    def get_anna_endpoint():
-        return ANNA_ENDPOINT
+    
+    def get_anna_endpoint(self):
+        return self._anna_endpoint
 
     @staticmethod
     def get_point_log_id(root, log_type):
