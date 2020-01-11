@@ -122,14 +122,14 @@ class Haanna(object):
         state = str(state)
         data = '<rules><rule id="{}"><name><![CDATA[{}]]></name>' \
                '<template id="{}" /><active>{}</active></rule>' \
-               "</rules>".format(schema_rule_id, schema, template_id, state)
+               '</rules>'.format(schema_rule_id, schema, template_id, state)
 
         r = requests.put(
             ANNA_ENDPOINT + uri,
             auth=(USERNAME, PASSWORD),
             data=data,
-            headers={"Content-Type": "text/xml"},
-            timeout=10,
+            headers={'Content-Type': 'text/xml'},
+            timeout=10
         )
 
         if r.status_code != requests.codes.ok:
@@ -140,7 +140,7 @@ class Haanna(object):
                 + r.text
             )
 
-        return "{} {}".format(r.text, data)
+        return '{} {}'.format(r.text, data)
 
     def get_active_schema_name(self, root):
         """Get active schema or determine last modified."""
