@@ -624,7 +624,12 @@ class Haanna(object):
     @staticmethod
     def get_active_name(root, schema_ids):
         """Gets the active schema from a (list of) rule id(s)"""
+        active = None
         schemas = {}
+        epoch = datetime.datetime(
+            1970, 1, 1, tzinfo=pytz.utc
+        )
+        date_format = "%Y-%m-%dT%H:%M:%S.%f%z"
         for schema_id in schema_ids:
             locator = root.find(
                 "rule[@id='" + schema_id + "']/active"
@@ -635,8 +640,33 @@ class Haanna(object):
                     "rule[@id='" + schema_id + "']/name"
                 ).text
                 return active
-        else:
-            return None
+                break
+            if locator.text == "false":
+                schema_name = root.find(
+                    "rule[@id='" + schema_id + "']/name"
+                ).text
+                schema_date = root.find(
+                    "rule[@id='"
+                    + schema_id
+                    + "']/modified_date"
+                ).text
+                # Python 3.6 fix (%z %Z issue)
+                corrected = re.sub(
+                    r"([-+]\d{2}):(\d{2})(?:(\d{2}))?$",
+                    r"\1\2\3",
+                    schema_date,
+                )
+                schema_time = datetime.datetime.strptime(
+                    corrected, date_format
+                )
+                schemas[schema_name] = (
+                    schema_time - epoch
+                ).total_seconds()
+        if active is None:
+            last_modified = sorted(
+                schemas.items(), key=lambda kv: kv[1]
+            )[-1][0]
+            return last_modified
 
 class AnnaException(Exception):
     def __init__(self, arg1, arg2=None):
