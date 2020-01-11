@@ -635,8 +635,8 @@ class Haanna(object):
                     "rule[@id='" + schema_id + "']/name"
                 ).text
                 return active
-            else:
-                return None
+        else:
+            return None
 
 class AnnaException(Exception):
     def __init__(self, arg1, arg2=None):
