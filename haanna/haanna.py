@@ -2,6 +2,8 @@
 Plugwise Anna HomeAssistant component
 """
 import requests
+import datetime
+import pytz
 import xml.etree.cElementTree as Etree
 
 # For python 3.6 strptime fix
