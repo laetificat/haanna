@@ -59,7 +59,7 @@ class Haanna(object):
                 "Could not get the direct objects."
             )
 
-        return Etree.fromstring(r.text)
+        return Etree.fromstring(self.escape_illegal_xml_characters(r.text))
 
     def get_domain_objects(self):
         r = requests.get(
@@ -73,8 +73,12 @@ class Haanna(object):
                 "Could not get the domain objects."
             )
 
-        return Etree.fromstring(r.text)
+        return Etree.fromstring(self.escape_illegal_xml_characters(r.text))
 
+    @staticmethod
+    def escape_illegal_xml_characters(root):
+        return re.sub(r'&([^a-zA-Z#])',r'&amp;\1',root)
+    
     def get_presets(self, root):
         """Gets the presets from the thermostat"""
         if self.legacy_anna:
