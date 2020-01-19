@@ -18,8 +18,12 @@ Usage
   from haanna import haanna
 
   # Create the API
-  api = haanna.Haanna('smile', 'short_id', '192.168.1.60', 80, legacy_anna)
+  api = haanna.Haanna('smile', 'short_id', '192.168.1.60', 80, False) 
+  #'False' must be changed to 'True' for a legacy Anna
 
+  # Fetch the direct objects
+  direct_objects = api.get_direct_objects()  
+  
   # Fetch the domain objects
   domain_objects = api.get_domain_objects()
 
@@ -64,16 +68,20 @@ Usage
   mode = api.get_mode(domain_objects)
   print(mode)
 
-  # Get heating status (true = heating is on, flame-icon on Anna display)
-  heating = api.get_heating_status(domain_objects)
+  # Get boiler status (true = boiler is on, flame-icon on Anna display), when available
+  boiler = api.get_boiler_status(direct_objects)
+  print(boiler)
+
+  # Get heating status (true = heating is on, flame-icon on Anna display), when available
+  heating = api.get_heating_status(direct_objects)
   print(heating)
   
   # Get cooling status (true = cooling is on, fan-icon on Anna display), when available
-  cooling = api.get_cooling_status(domain_objects)
+  cooling = api.get_cooling_status(direct_objects)
   print(cooling)
 
   # Get domestic hot water status (true = water is being heated, tap-icon on Anna display), when available
-  hot_water = api.get_domestic_hot_water_status(domain_objects)
+  hot_water = api.get_domestic_hot_water_status(direct_objects)
   print(hot_water)
   
   # Get the illuminance value

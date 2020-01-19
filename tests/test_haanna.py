@@ -20,6 +20,11 @@ class TestHaannaMethods(unittest.TestCase):
         """Ping the thermostst"""
         self.assertTrue(self.haanna.ping_anna_thermostat())
 
+    def test_get_direct_objects(self):
+        """Get the direct objects"""
+        self.assertTrue(len(Et.tostring(self.haanna.get_direct_objects(), encoding='utf8', method='xml')) > 0)
+        time.sleep(3)
+
     def test_get_domain_objects(self):
         """Get the domain objects"""
         self.assertTrue(len(Et.tostring(self.haanna.get_domain_objects(), encoding='utf8', method='xml')) > 0)
@@ -132,27 +137,35 @@ class TestHaannaMethods(unittest.TestCase):
             self.assertTrue(len(self.haanna.get_preset_dictionary(domain_objects, rule_id)) > 0)
         time.sleep(3)
 
+    def test_get_boiler_status(self):
+        """Gets the boiler status - Hard to reproduce in a test; only verify the code does not raise an exception"""
+        direct_objects = self.haanna.get_direct_objects()
+        try:
+            self.haanna.get_boiler_status(direct_objects)
+        except:
+            assert False, "Unexpected exception"
+        
     def test_get_heating_status(self):
         """Gets the heating status - Hard to reproduce in a test; only verify the code does not raise an exception"""
-        domain_objects = self.haanna.get_domain_objects()
+        direct_objects = self.haanna.get_direct_objects()
         try:
-            self.haanna.get_heating_status(domain_objects)
+            self.haanna.get_heating_status(direct_objects)
         except:
             assert False, "Unexpected exception"
             
     def test_get_cooling_status(self):
         """Gets the cooling status - Hard to reproduce in a test; only verify the code does not raise an exception"""
-        domain_objects = self.haanna.get_domain_objects()
+        direct_objects = self.haanna.get_direct_objects()
         try:
-            self.haanna.get_cooling_status(domain_objects)
+            self.haanna.get_cooling_status(direct_objects)
         except:
             assert False, "Unexpected exception"
     
     def test_get_domestic_hot_water_status(self):
         """Gets the domestic hot water status - Hard to reproduce in a test; only verify the code does not raise an exception"""
-        domain_objects = self.haanna.get_domain_objects()
+        direct_objects = self.haanna.get_direct_objects()
         try:
-            self.haanna.get_domestic_hot_water_status(domain_objects)
+            self.haanna.get_domestic_hot_water_status(direct_objects)
         except:
             assert False, "Unexpected exception"
 
@@ -163,4 +176,3 @@ class TestHaannaMethods(unittest.TestCase):
             self.haanna.get_mode(domain_objects)
         except:
             assert False, "Unexpected exception"
-
