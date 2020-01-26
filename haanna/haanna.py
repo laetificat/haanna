@@ -351,6 +351,7 @@ class Haanna:
                 root, current_temp_point_log_id
             )
             value = float(measurement)
+            value = '{:.1f}'.format(round(value, 1))
             return value
         return None
 
