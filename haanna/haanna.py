@@ -158,7 +158,7 @@ class Haanna(object):
         return '{} {}'.format(r.text, data)
 
     def get_active_schema_name(self, root):
-        """Get active schema or determine last modified."""
+        """Get active schema."""
         if self.legacy_anna:
             schemas = root.findall(".//rule")
             result = []
@@ -170,19 +170,22 @@ class Haanna(object):
             if result == []:
                 return None
             return result
-
+            
         else:
             locator = "zone_preset_based_on_time_and_presence_with_override"
-            rule_id = self.get_rule_id_by_template_tag(
-                root, locator
-            )
+            rule_id = self.get_rule_id_by_template_tag(root, locator)
             if rule_id is None:
                 return None
             else:
-                schema_active = self.get_active_name(
-                    root, rule_id
-                )
+                schema_active = self.get_active_name(root, rule_id)
                 return schema_active
+
+    def get_last_active_schema_name(self, root):
+        """Determine the last active schema (not used for legacy Anna)."""
+        locator = "zone_preset_based_on_time_and_presence_with_override"
+        rule_id = self.get_rule_id_by_template_tag(root, locator)
+        last_schema_active = self.get_last_active_name(root, rule_id)
+        return last_schema_active
 
     def get_schema_state(self, root):
         """
@@ -632,52 +635,31 @@ class Haanna(object):
                 break
         return active
 
-    @staticmethod
-    def get_active_name(root, schema_ids):
+    def get_active_name(self, root, schema_ids):
         """Gets the active schema from a (list of) rule id(s)"""
         active = None
         schemas = {}
-        epoch = datetime.datetime(
-            1970, 1, 1, tzinfo=pytz.utc
-        )
-        date_format = "%Y-%m-%dT%H:%M:%S.%f%z"
         for schema_id in schema_ids:
-            locator = root.find(
-                "rule[@id='" + schema_id + "']/active"
-            )
+            locator = root.find("rule[@id='" + schema_id + "']/active")
             # Only one can be active
             if locator.text == "true":
-                active = root.find(
-                    "rule[@id='" + schema_id + "']/name"
-                ).text
+                active = root.find("rule[@id='" + schema_id + "']/name").text
                 return active
-                break
-            if locator.text == "false":
-                schema_name = root.find(
-                    "rule[@id='" + schema_id + "']/name"
-                ).text
-                schema_date = root.find(
-                    "rule[@id='"
-                    + schema_id
-                    + "']/modified_date"
-                ).text
-                # Python 3.6 fix (%z %Z issue)
-                corrected = re.sub(
-                    r"([-+]\d{2}):(\d{2})(?:(\d{2}))?$",
-                    r"\1\2\3",
-                    schema_date,
-                )
-                schema_time = datetime.datetime.strptime(
-                    corrected, date_format
-                )
-                schemas[schema_name] = (
-                    schema_time - epoch
-                ).total_seconds()
-        if active is None:
-            last_modified = sorted(
-                schemas.items(), key=lambda kv: kv[1]
-            )[-1][0]
-            return last_modified
+        
+    def get_last_active_name(self, root, schema_ids):
+        """Gets the last active schema from a (list of) rule id(s)"""
+        schemas = {}
+        epoch = datetime.datetime(1970, 1, 1, tzinfo=pytz.utc)
+        date_format = "%Y-%m-%dT%H:%M:%S.%f%z"
+        for schema_id in schema_ids:
+            schema_name = root.find("rule[@id='" + schema_id + "']/name").text
+            schema_date = root.find("rule[@id='" + schema_id + "']/modified_date").text
+            # Python 3.6 fix (%z %Z issue)
+            corrected = re.sub(r"([-+]\d{2}):(\d{2})(?:(\d{2}))?$", r"\1\2\3", schema_date, )
+            schema_time = datetime.datetime.strptime(corrected, date_format)
+            schemas[schema_name] = (schema_time - epoch).total_seconds()
+        last_modified = sorted(schemas.items(), key=lambda kv: kv[1])[-1][0]
+        return last_modified
 
 class AnnaException(Exception):
     def __init__(self, arg1, arg2=None):
