@@ -6,7 +6,7 @@ def readme():
 
 setup(
     name='haanna',
-    version='0.14.3',
+    version='0.14.4',
     description='Plugwise Anna API to use in conjunction with Home Assistant.',
     long_description='Plugwise Anna API to use in conjunction with Home Assistant, but it can also be used without Home Assistant.',
     keywords='HomeAssistant HA Home Assistant Anna Plugwise',
