@@ -370,7 +370,6 @@ class Haanna:
         if thermostat_log_id:
             measurement = self.get_measurement_from_point_log(root, thermostat_log_id)
             value = float(measurement)
-            value = '{:.1f}'.format(round(value, 1))
             return value
         return None
 
