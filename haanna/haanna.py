@@ -340,7 +340,6 @@ class Haanna:
             measurement = self.get_measurement_from_point_log(root, point_log_id)
             if measurement:
                 value = float(measurement)
-                value = '{:.1f}'.format(round(value, 1))
                 return value
         return None
 
