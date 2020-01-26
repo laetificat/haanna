@@ -339,7 +339,9 @@ class Haanna:
         if point_log_id:
             measurement = self.get_measurement_from_point_log(root, point_log_id)
             if measurement:
-                return float(measurement)
+                value = float(measurement)
+                value = '{:.1f}'.format(round(value, 1))
+                return value
         return None
 
     def get_current_temperature(self, root):
@@ -349,7 +351,9 @@ class Haanna:
             measurement = self.get_measurement_from_point_log(
                 root, current_temp_point_log_id
             )
-            return float(measurement)
+            value = float(measurement)
+            value = '{:.1f}'.format(round(value, 1))
+            return value
         return None
 
     def get_target_temperature(self, root):
@@ -357,7 +361,9 @@ class Haanna:
         target_temp_log_id = self.get_point_log_id(root, "target_temperature")
         if target_temp_log_id:
             measurement = self.get_measurement_from_point_log(root, target_temp_log_id)
-            return float(measurement)
+            value = float(measurement)
+            value = '{:.1f}'.format(round(value, 1))
+            return value  
         return None
 
     def get_thermostat_temperature(self, root):
@@ -365,7 +371,9 @@ class Haanna:
         thermostat_log_id = self.get_point_log_id(root, "thermostat")
         if thermostat_log_id:
             measurement = self.get_measurement_from_point_log(root, thermostat_log_id)
-            return float(measurement)
+            value = float(measurement)
+            value = '{:.1f}'.format(round(value, 1))
+            return value
         return None
 
     def get_outdoor_temperature(self, root):
@@ -374,7 +382,7 @@ class Haanna:
         if outdoor_temp_log_id:
             measurement = self.get_measurement_from_point_log(root, outdoor_temp_log_id)
             value = float(measurement)
-            value = round(value, 1)
+            value = '{:.1f}'.format(round(value, 1))
             return value
         return None
 
@@ -384,7 +392,7 @@ class Haanna:
         if point_log_id:
             measurement = self.get_measurement_from_point_log(root, point_log_id)
             value = float(measurement)
-            value = round(value, 1)
+            value = '{:.1f}'.format(round(value, 1))
             return value
         return None
 
@@ -394,7 +402,7 @@ class Haanna:
         if point_log_id:
             measurement = self.get_measurement_from_point_log(root, point_log_id)
             value = float(measurement)
-            value = round(value, 1)
+            value = '{:.1f}'.format(round(value, 1))
             return value
         return None
 
@@ -403,7 +411,9 @@ class Haanna:
         point_log_id = self.get_point_log_id(root, "central_heater_water_pressure")
         if point_log_id:
             measurement = self.get_measurement_from_point_log(root, point_log_id)
-            return float(measurement)
+            value = float(measurement)
+            value = '{:.1f}'.format(round(value, 1))
+            return value
         return None
 
     def __get_temperature_uri(self, root):
