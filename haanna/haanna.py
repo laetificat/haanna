@@ -153,19 +153,17 @@ class Haanna:
 
         locator = "zone_preset_based_on_time_and_presence_with_override"
         rule_id = self.get_rule_id_by_template_tag(root, locator)
-        if rule_id is None:
-            return None
-        schema_active = self.get_active_name(root, rule_id)
-        return schema_active
+        if rule_id:
+            schema_active = self.get_active_name(root, rule_id)
+            return schema_active
 
     def get_last_active_schema_name(self, root):
         """Determine the last active schema (not used for legacy Anna)."""
-        if self.legacy_anna:
-            return None
-        locator = "zone_preset_based_on_time_and_presence_with_override"
-        rule_id = self.get_rule_id_by_template_tag(root, locator)
-        last_schema_active = self.get_last_active_name(root, rule_id)
-        return last_schema_active
+        if not self.legacy_anna:
+            locator = "zone_preset_based_on_time_and_presence_with_override"
+            rule_id = self.get_rule_id_by_template_tag(root, locator)
+            last_schema_active = self.get_last_active_name(root, rule_id)
+            return last_schema_active
 
     @staticmethod
     def get_schema_state(root):
