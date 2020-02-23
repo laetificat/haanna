@@ -1,11 +1,12 @@
 """Plugwise Anna Home Assistant component."""
 
 import requests
+import xml.etree.cElementTree as Etree
+# Time related
 import datetime
 import pytz
-import xml.etree.cElementTree as Etree
-
-# For python 3.6 strptime fix
+from dateutil.parser import parse
+# For XML corrections
 import re
 
 ANNA_PING_ENDPOINT = "/ping"
@@ -545,11 +546,7 @@ class Haanna:
         for schema_id in schema_ids:
             schema_name = root.find("rule[@id='" + schema_id + "']/name").text
             schema_date = root.find("rule[@id='" + schema_id + "']/modified_date").text
-            # Python 3.6 fix (%z %Z issue)
-            corrected = re.sub(
-                r"([-+]\d{2}):(\d{2})(?:(\d{2}))?$", r"\1\2\3", schema_date,
-            )
-            schema_time = datetime.datetime.strptime(corrected, date_format)
+            schema_time = parse(schema_date)
             schemas[schema_name] = (schema_time - epoch).total_seconds()
         last_modified = sorted(schemas.items(), key=lambda kv: kv[1])[-1][0]
         return last_modified
