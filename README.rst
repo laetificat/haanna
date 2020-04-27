@@ -1,4 +1,5 @@
-# This repository is no longer used -  @bouwew and @compatech now maintain Plugwise-Smile
+This repository is no longer used -  @bouwew and @compatech now maintain Plugwise-Smile
+--------------
 
  - Custom component: [plugwise-beta](https://github.com/plugwise/plugwise-beta)
  - Python module: [Plugwise-Smile](https://github.com/plugwise/Plugwise-Smile)
