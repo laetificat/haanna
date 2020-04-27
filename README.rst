@@ -1,3 +1,11 @@
+# This repository is no longer used -  @bouwew and @compatech now maintain Plugwise-Smile
+
+ - Custom component: [plugwise-beta](https://github.com/plugwise/plugwise-beta)
+ - Python module: [Plugwise-Smile](https://github.com/plugwise/Plugwise-Smile)
+
+Sometime (soon)[https://github.com/home-assistant/core/pull/33691] after HA-core 0.109 this module will not be used by HA-core's plugwise component!
+
+
 Haanna (HA Anna)
 ----------------
 A Python API made for use in conjunction with the Home Assistant Anna component, but this API can also be used in other projects.
