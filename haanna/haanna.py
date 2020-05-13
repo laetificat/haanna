@@ -494,9 +494,13 @@ class Haanna:
         preset_dictionary = {}
         directives = root.find("rule[@id='" + rule_id + "']/directives")
         for directive in directives:
-            preset_dictionary[directive.attrib["preset"]] = float(
-                directive.find("then").attrib["setpoint"]
-            )
+            preset = directive.find("then").attrib
+            keys, dummy = zip(*preset.items())
+            if str(keys[0]) == "setpoint":
+                preset_dictionary[directive.attrib["preset"]] = float(preset["setpoint"])
+            else:
+                preset_dictionary[directive.attrib["preset"]] = float(preset["heating_setpoint"])
+
         return preset_dictionary
 
     @staticmethod
